@@ -66,13 +66,13 @@
             <p id="prof-phone">নম্বর লোড হচ্ছে...</p>
         </div>
 
-        <button class="btn btn-home" onclick="location.href='index.html'">হোমে ফিরে যান</button>
+        <button class="btn btn-home" onclick="location.href='home.html'">হোমে ফিরে যান</button>
         <button class="btn btn-logout" onclick="logout()">লগ আউট</button>
     </div>
 
     <script>
-        // লগইন করা তথ্য প্রদর্শন
         window.onload = function() {
+            // localStorage থেকে নাম এবং নম্বর সংগ্রহ
             const name = localStorage.getItem('studentName');
             const phone = localStorage.getItem('studentPhone');
 
@@ -80,19 +80,19 @@
                 document.getElementById('prof-name').innerText = name;
                 document.getElementById('prof-phone').innerText = "📱 " + phone;
             } else {
-                // তথ্য না থাকলে লগইন পেজে পাঠিয়ে দেবে
-                window.location.href = "login.html";
+                // তথ্য না থাকলে লগইন পেজে (index.html) পাঠিয়ে দেবে
+                window.location.href = "index.html";
             }
         };
 
-        // লগ আউট ফাংশন
         function logout() {
             if (confirm("আপনি কি নিশ্চিতভাবে লগ আউট করতে চান?")) {
-                localStorage.clear(); // সব তথ্য মুছে ফেলবে
-                window.location.href = "login.html";
+                localStorage.clear(); // সব তথ্য মুছে ফেলা
+                window.location.href = "index.html"; // লগইন পেজে ফেরত
             }
         }
     </script>
 
 </body>
 </html>
+
