@@ -16,12 +16,16 @@
         .container { padding: 20px 5%; flex: 1; }
         .section-title { background: #1c2536; padding: 12px 20px; border-radius: 10px; margin: 20px 0 15px; border-left: 5px solid #764ba2; font-size: 18px; color: #ffffff; }
         .list-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        
+        /* লিঙ্কের জন্য অতিরিক্ত স্টাইল */
+        .topic-link { text-decoration: none; display: block; }
         .topic-item { background: #ffffff; color: #333; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .topic-item:hover { transform: scale(1.02); background: #f0f0f0; }
         .topic-info h3 { font-size: 16px; margin-bottom: 3px; color: #2c3e50; }
         .topic-info p { font-size: 13px; color: #7f8c8d; }
         .start-icon { color: #764ba2; font-size: 20px; }
-        .footer { background-color: #0f141e; text-align: center; padding: 30px 20px; border-top: 1px solid #1c2536; }
+
+        .footer { background-color: #0f141e; text-align: center; padding: 30px 20px; border-top: 1px solid #1c2536; margin-top: auto; }
         .footer p { color: #94a3b8; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
         .footer .creator { color: #475569; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
     </style>
@@ -40,106 +44,34 @@
     <div class="container">
         <h2 class="section-title">১. গদ্য (গল্প ও প্রবন্ধ)</h2>
         <div class="list-grid">
-            <div class="topic-item" onclick="location.href='quiz_nabya_lekhok.html'">
-                <div class="topic-info"><h3>বাংলার নব্য লেখকদিগের প্রতি নিবেদন</h3><p>বঙ্কিমচন্দ্র চট্টোপাধ্যায়</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_oporichita.html'">
-                <div class="topic-info"><h3>অপরিচিতা</h3><p>রবীন্দ্রনাথ ঠাকুর</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_bilasi.html'">
-                <div class="topic-info"><h3>বিলাসী</h3><p>শরৎচন্দ্র চট্টোপাধ্যায়</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_griho.html'">
-                <div class="topic-info"><h3>গৃহ</h3><p>রোকেয়া সাখাওয়াত হোসেন</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_ahban.html'">
-                <div class="topic-info"><h3>আহ্বান</h3><p>বিভূতিভূষণ বন্দ্যোপাধ্যায়</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_amar_poth.html'">
-                <div class="topic-info"><h3>আমার পথ</h3><p>কাজী নজরুল ইসলাম</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_manob_kollan.html'">
-                <div class="topic-info"><h3>মানব-কল্যাণ</h3><p>আবুল ফজল</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_masi_pisi.html'">
-                <div class="topic-info"><h3>মাসি-পিসি</h3><p>মানিক বন্দ্যোপাধ্যায়</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_52_din.html'">
-                <div class="topic-info"><h3>বায়ান্নর দিনগুলো</h3><p>শেখ মুজিবুর রহমান</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_raincoat.html'">
-                <div class="topic-info"><h3>রেইনকোট</h3><p>আখতারুজ্জামান ইলিয়াস</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_curator.html'">
-                <div class="topic-info"><h3>মহাজাগতিক কিউরেটর</h3><p>মুহম্মদ জাফর ইকবাল</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_necklace.html'">
-                <div class="topic-info"><h3>নেকলেস</h3><p>গি দ্য মোপাসাঁ</p></div>
-                <div class="start-icon">▶</div>
-            </div>
+            <a href="quiz_bengali_1.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>বাংলার নব্য লেখকদিগের প্রতি নিবেদন</h3><p>বঙ্কিমচন্দ্র চট্টোপাধ্যায়</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_2.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>অপরিচিতা</h3><p>রবীন্দ্রনাথ ঠাকুর</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_3.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>বিলাসী</h3><p>শরৎচন্দ্র চট্টোপাধ্যায়</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_4.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>গৃহ</h3><p>রোকেয়া সাখাওয়াত হোসেন</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_5.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>আহ্বান</h3><p>বিভূতিভূষণ বন্দ্যোপাধ্যায়</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_6.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>আমার পথ</h3><p>কাজী নজরুল ইসলাম</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_7.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>মানব-কল্যাণ</h3><p>আবুল ফজল</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_8.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>মাসি-পিসি</h3><p>মানিক বন্দ্যোপাধ্যায়</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_9.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>বায়ান্নর দিনগুলো</h3><p>শেখ মুজিবুর রহমান</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_10.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>রেইনকোট</h3><p>আখতারুজ্জামান ইলিয়াস</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_11.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>মহাজাগতিক কিউরেটর</h3><p>মুহম্মদ জাফর ইকবাল</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_bengali_12.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>নেকলেস</h3><p>গি দ্য মোপাসাঁ</p></div><div class="start-icon">▶</div></div></a>
         </div>
 
         <h2 class="section-title">২. কবিতা</h2>
         <div class="list-grid">
-            <div class="topic-item" onclick="location.href='quiz_meghnad.html'">
-                <div class="topic-info"><h3>বিভিষণের প্রতি মেঘনাদ</h3><p>মাইকেল মধুসূদন দত্ত</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_sonar_tori.html'">
-                <div class="topic-info"><h3>সোনার তরী</h3><p>রবীন্দ্রনাথ ঠাকুর</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_bidrohi.html'">
-                <div class="topic-info"><h3>বিদ্রোহী</h3><p>কাজী নজরুল ইসলাম</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_protidan.html'">
-                <div class="topic-info"><h3>প্রতিদান</h3><p>জসীমউদ্দীন</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_suchetana.html'">
-                <div class="topic-info"><h3>সুচেতনা</h3><p>জীবনানন্দ দাশ</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_taharei_pore_mone.html'">
-                <div class="topic-info"><h3>তাহারেই পড়ে মনে</h3><p>সুফিয়া কামাল</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_podma.html'">
-                <div class="topic-info"><h3>পদ্মা</h3><p>ফররুখ আহমদ</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_18_bosor.html'">
-                <div class="topic-info"><h3>১৮ বছর বয়স</h3><p>সুকান্ত ভট্টাচার্য</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_69_february.html'">
-                <div class="topic-info"><h3>ফেব্রুয়ারি ১৯৬৯</h3><p>শামসুর রাহমান</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_kingbodonti.html'">
-                <div class="topic-info"><h3>আমি কিংবদন্তির কথা বলছি</h3><p>আবু জাফর ওবায়দুল্লাহ</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_nuruldin.html'">
-                <div class="topic-info"><h3>নুরুলদীনের সারাজীবন</h3><p>সৈয়দ শামসুল হক</p></div>
-                <div class="start-icon">▶</div>
-            </div>
-            <div class="topic-item" onclick="location.href='quiz_chobi.html'">
-                <div class="topic-info"><h3>ছবি</h3><p>আবু হেনা মোস্তফা কামাল</p></div>
-                <div class="start-icon">▶</div>
-            </div>
+            <a href="quiz_poem_1.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>বিভিষণের প্রতি মেঘনাদ</h3><p>মাইকেল মধুসূদন দত্ত</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_2.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>সোনার তরী</h3><p>রবীন্দ্রনাথ ঠাকুর</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_3.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>বিদ্রোহী</h3><p>কাজী নজরুল ইসলাম</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_4.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>প্রতিদান</h3><p>জসীমউদ্দীন</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_5.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>সুচেতনা</h3><p>জীবনানন্দ দাশ</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_6.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>তাহারেই পড়ে মনে</h3><p>সুফিয়া কামাল</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_7.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>পদ্মা</h3><p>ফররুখ আহমদ</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_8.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>১৮ বছর বয়স</h3><p>সুকান্ত ভট্টাচার্য</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_9.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>ফেব্রুয়ারি ১৯৬৯</h3><p>শামসুর রাহমান</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_10.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>আমি কিংবদন্তির কথা বলছি</h3><p>আবু জাফর ওবায়দুল্লাহ</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_11.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>নুরুলদীনের সারাজীবন</h3><p>সৈয়দ শামসুল হক</p></div><div class="start-icon">▶</div></div></a>
+            <a href="quiz_poem_12.html" class="topic-link"><div class="topic-item"><div class="topic-info"><h3>ছবি</h3><p>আবু হেনা মোস্তফা কামাল</p></div><div class="start-icon">▶</div></div></a>
         </div>
     </div>
 
