@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>হোম | একাডেমিক পোর্টাল</title>
     <style>
-        /* আপনার অরিজিনাল ফাইলের হুবহু স্টাইল */
+        /* আপনার অরিজিনাল ফাইলের হুবহু স্টাইল রাখা হয়েছে */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #121826; color: #ffffff; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
         
@@ -77,13 +77,15 @@
 
     <script>
         window.onload = function() {
-            // localStorage থেকে ইউজারের নাম আনা হচ্ছে
+            // ১. লগইন স্ট্যাটাস এবং নাম উভয়ই চেক করা হচ্ছে
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
             const name = localStorage.getItem('studentName');
-            if (name) {
+
+            if (isLoggedIn === 'true' && name) {
                 document.getElementById('userNameDisplay').innerText = name;
                 document.getElementById('welcomeHeading').innerText = "স্বাগতম, " + name + "!";
             } else {
-                // নাম না থাকলে লগইন পেজে (index.html) পাঠিয়ে দেবে
+                // ২. যদি লগইন তথ্য না থাকে, তবেই index.html-এ পাঠাবে
                 window.location.href = "index.html";
             }
         };
