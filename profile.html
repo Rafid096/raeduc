@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোফাইল | একাডেমিক পোর্টাল</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .profile-card {
+            background: #1c2536;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #2c3e50;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            background: #764ba2;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            border: 4px solid #232d3f;
+        }
+
+        .user-info { margin-bottom: 30px; }
+        .user-info h2 { font-size: 24px; color: #ffffff; margin-bottom: 5px; }
+        .user-info p { color: #bdc3c7; font-size: 16px; }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-home { background: #232d3f; color: white; }
+        .btn-home:hover { background: #2c3e50; }
+
+        .btn-logout { background: #e94560; color: white; }
+        .btn-logout:hover { background: #ff4d6d; }
+    </style>
+</head>
+<body>
+
+    <div class="profile-card">
+        <div class="profile-pic">👤</div>
+        
+        <div class="user-info">
+            <h2 id="prof-name">নাম লোড হচ্ছে...</h2>
+            <p id="prof-phone">নম্বর লোড হচ্ছে...</p>
+        </div>
+
+        <button class="btn btn-home" onclick="location.href='index.html'">হোমে ফিরে যান</button>
+        <button class="btn btn-logout" onclick="logout()">লগ আউট</button>
+    </div>
+
+    <script>
+        // লগইন করা তথ্য প্রদর্শন
+        window.onload = function() {
+            const name = localStorage.getItem('studentName');
+            const phone = localStorage.getItem('studentPhone');
+
+            if (name && phone) {
+                document.getElementById('prof-name').innerText = name;
+                document.getElementById('prof-phone').innerText = "📱 " + phone;
+            } else {
+                // তথ্য না থাকলে লগইন পেজে পাঠিয়ে দেবে
+                window.location.href = "login.html";
+            }
+        };
+
+        // লগ আউট ফাংশন
+        function logout() {
+            if (confirm("আপনি কি নিশ্চিতভাবে লগ আউট করতে চান?")) {
+                localStorage.clear(); // সব তথ্য মুছে ফেলবে
+                window.location.href = "login.html";
+            }
+        }
+    </script>
+
+</body>
+</html>
