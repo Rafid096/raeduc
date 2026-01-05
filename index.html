@@ -33,16 +33,28 @@
     </div>
 
     <script>
+        // পেজ লোড হওয়ার সময় চেক করবে ইউজার আগে থেকে লগইন করা কি না
+        window.onload = function() {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = "home.html";
+            }
+        };
+
         function login() {
             const name = document.getElementById('userName').value;
             const phone = document.getElementById('userPhone').value;
+            
             if (name.trim() === "" || phone.trim() === "") {
                 alert("দয়া করে সঠিক তথ্য দিন!");
                 return;
             }
+
+            // তথ্যগুলো ব্রাউজারে স্থায়ীভাবে সেভ করা হচ্ছে
             localStorage.setItem('studentName', name);
             localStorage.setItem('studentPhone', phone);
-            window.location.href = "home.html"; // লগইন সফল হলে হোম পেজে যাবে
+            localStorage.setItem('isLoggedIn', 'true'); // লগইন অবস্থা মনে রাখার জন্য
+
+            window.location.href = "home.html"; 
         }
     </script>
 </body>
