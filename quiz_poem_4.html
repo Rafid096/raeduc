@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কুইজ - প্রতিদান</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #1a1a2e; color: #ffffff; padding-bottom: 50px; }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: #16213e;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        #time-display { font-size: 20px; font-weight: bold; color: #e94560; }
+        
+        #result-summary {
+            display: none;
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #e94560;
+        }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+
+        .q-card {
+            background: #ffffff;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .q-text { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #1a1a2e; }
+        
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; font-weight: bold; }
+        .selected { background: #e0e7ff; border-color: #533483; }
+
+        .submit-area { text-align: center; margin-top: 30px; }
+        .btn-submit { background: #e94560; color: white; padding: 15px 40px; border: none; border-radius: 25px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header">
+        <div id="timer-box">অবশিষ্ট সময়: <span id="time-display">45:00</span></div>
+        <div id="result-summary">
+            <h2 style="color: #4db8ff;">প্রতিদান কুইজ সম্পন্ন!</h2>
+            <h3 id="final-score" style="margin: 10px 0;">স্কোর: 0</h3>
+            <p id="details" style="color: #bdc3c7; font-size: 14px;"></p>
+            <button class="btn-submit" style="background: #533483; margin-top: 10px;" onclick="location.href='index.html'">হোমে ফিরে যান</button>
+        </div>
+    </div>
+
+    <div class="container" id="quiz-container"></div>
+
+    <div class="submit-area" id="submit-section">
+        <button class="btn-submit" onclick="finishQuiz()">কুইজ জমা দিন</button>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "১. 'প্রতিদান' কবিতাটি জসীমউদ্দীনের কোন কাব্যগ্রন্থের অন্তর্গত?", a: "নক্সী কাঁথার মাঠ", b: "বালুচর", c: "ধানক্ষেত", d: "রাখালী", correct: "b" },
+            { q: "২. 'আমার এ ঘর ভাঙিয়াছে যেবা, আমি বাঁধি তার ঘর'— এখানে কবির কোন গুণটি প্রকাশ পেয়েছে?", a: "ক্ষমা ও উদারতা", b: "অহংকার", c: "বীরত্ব", d: "ভয়", correct: "a" },
+            { q: "৩. যে কবিকে 'কণ্টক' দিয়েছে, কবি তাকে কী দেওয়ার কথা বলেছেন?", a: "শাস্তি", b: "ফুল/কুল ভরা মালঞ্চ", c: "দুঃখ", d: "কাঁটা", correct: "b" },
+            { q: "৪. 'প্রতিদান' কবিতায় কবি নিজেকে কার 'দিশেহারা' বলেছেন?", a: "বন্ধুর", b: "পরের", c: "শত্রুর", d: "অচেনার", correct: "b" },
+            { q: "৫. কবি কেন পরকে আপন করার জন্য ব্যাকুল হন?", a: "ভয়ে", b: "নিঃস্বার্থ ভালোবাসার কারণে", c: "পরিচিতির জন্য", d: "উপকার পাওয়ার আশায়", correct: "b" },
+            { q: "৬. 'মালঞ্চ' শব্দের অর্থ কী?", a: "বাগান", b: "নদী", c: "আকাশ", d: "পাহাড়", correct: "a" },
+            { q: "৭. যে কবিকে 'নিঠুর' কথা বলে, কবি তার জন্য কী করেন?", a: "রাগ করেন", b: "সুধাময় গান রচনা করেন", c: "পাল্টা কথা বলেন", d: "চুপ থাকেন", correct: "b" },
+            { q: "৮. কবিতায় 'যাহারে দিয়াছি প্রাণ'— তার কাছ থেকে কবি কী পেয়েছেন?", a: "ভালোবাসা", b: "বিষে ভরা তীর (আঘাত)", c: "উপহার", d: "সান্ত্বনা", correct: "b" },
+            { q: "৯. 'প্রতিদান' কবিতার মূল সুর কী?", a: "প্রতিহিংসা", b: "ক্ষমা ও পরার্থপরতা", c: "হতাশা", d: "ব্যক্তিগত লাভ", correct: "b" },
+            { q: "১০. কবি কার সোহাগে রঙিন করার কথা বলেছেন?", a: "নিজের", b: "যে মুখ নিষ্ঠুর কথা বলে তার", c: "মা-বাবার", d: "বন্ধুর", correct: "b" }
+        ];
+
+        for(let i=11; i<=50; i++) {
+            questions.push({
+                q: `${i}. 'প্রতিদান' কবিতায় কবির জীবনদর্শনের প্রধান দিক কোনটি?`,
+                a: "নিজের স্বার্থ রক্ষা", b: "শত্রুকে আপন করে নেওয়া", c: "দূরে সরে যাওয়া", d: "বিপ্লব করা",
+                correct: "b"
+            });
+        }
+
+        const quizContainer = document.getElementById('quiz-container');
+        let userAnswers = {};
+
+        questions.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'q-card';
+            card.id = `q-box-${index}`;
+            card.innerHTML = `
+                <div class="q-text">${item.q}</div>
+                <div class="options">
+                    <div class="option" onclick="selectOpt(${index}, 'a', this)">ক. ${item.a}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'b', this)">খ. ${item.b}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'c', this)">গ. ${item.c}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'd', this)">ঘ. ${item.d}</div>
+                </div>
+            `;
+            quizContainer.appendChild(card);
+        });
+
+        function selectOpt(qIdx, opt, element) {
+            const parent = element.parentElement;
+            Array.from(parent.children).forEach(child => child.classList.remove('selected'));
+            element.classList.add('selected');
+            userAnswers[qIdx] = opt;
+        }
+
+        let time = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(time / 60);
+            let secs = time % 60;
+            document.getElementById('time-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (time <= 0) { clearInterval(timerInterval); finishQuiz(); }
+            time--;
+        }, 1000);
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-box').style.display = 'none';
+            document.getElementById('submit-section').style.display = 'none';
+            
+            let score = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            questions.forEach((item, index) => {
+                const box = document.getElementById(`q-box-${index}`);
+                const opts = box.querySelectorAll('.option');
+                const selected = userAnswers[index];
+                const correctLetter = item.correct;
+                const letterMap = { a: 0, b: 1, c: 2, d: 3 };
+
+                if (selected) {
+                    if (selected === correctLetter) {
+                        score += 1;
+                        correctCount++;
+                        opts[letterMap[selected]].classList.add('correct');
+                    } else {
+                        score -= 0.25;
+                        wrongCount++;
+                        opts[letterMap[selected]].classList.add('wrong');
+                        opts[letterMap[correctLetter]].classList.add('correct');
+                    }
+                }
+                opts.forEach(opt => opt.onclick = null);
+            });
+
+            const resultArea = document.getElementById('result-summary');
+            resultArea.style.display = 'block';
+            document.getElementById('final-score').innerText = `আপনার প্রাপ্ত স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('details').innerText = `সঠিক: ${correctCount} | ভুল: ${wrongCount} | উত্তর দেননি: ${questions.length - (correctCount + wrongCount)}`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

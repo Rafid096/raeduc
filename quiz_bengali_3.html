@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কুইজ - বিলাসী</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding-bottom: 50px; }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: #1c2536;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        #time-display { font-size: 20px; font-weight: bold; color: #e74c3c; }
+        
+        #result-summary {
+            display: none;
+            background: #232d3f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #764ba2;
+        }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+
+        .q-card {
+            background: #ffffff;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .q-text { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #121826; }
+        
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; font-weight: bold; }
+        .selected { background: #e0e7ff; border-color: #764ba2; }
+
+        .submit-area { text-align: center; margin-top: 30px; }
+        .btn-submit { background: #764ba2; color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header">
+        <div id="timer-box">অবশিষ্ট সময়: <span id="time-display">45:00</span></div>
+        <div id="result-summary">
+            <h2 style="color: #2ecc71;">বিলাসী কুইজ সম্পন্ন!</h2>
+            <h3 id="final-score" style="margin: 10px 0;">স্কোর: 0</h3>
+            <p id="details" style="color: #bdc3c7; font-size: 14px;"></p>
+            <button class="btn-submit" style="background: #475569; margin-top: 10px;" onclick="location.href='index.html'">হোমে ফিরে যান</button>
+        </div>
+    </div>
+
+    <div class="container" id="quiz-container"></div>
+
+    <div class="submit-area" id="submit-section">
+        <button class="btn-submit" onclick="finishQuiz()">পরীক্ষা শেষ করুন</button>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "১. 'বিলাসী' গল্পটি প্রথম কোন পত্রিকায় প্রকাশিত হয়?", a: "সবুজপত্র", b: "ভারতী", c: "প্রবাসী", d: "বঙ্গদর্শন", correct: "b" },
+            { q: "২. ন্যাড়া ও মৃত্যুঞ্জয় একসাথে কত মাইল পথ হেঁটে স্কুলে যেত?", a: "দুই ক্রোশ", b: "চার ক্রোশ", c: "এক ক্রোশ", d: "তিন ক্রোশ", correct: "b" },
+            { q: "৩. মৃত্যুঞ্জয় কোন ক্লাসে পড়ত?", a: "ফোর্থ ক্লাস", b: "থার্ড ক্লাস", c: "সেকেন্ড ক্লাস", d: "ফার্স্ট ক্লাস", correct: "b" },
+            { q: "৪. মৃত্যুঞ্জয়ের বাগানে কোন ফলটি সবচেয়ে বিখ্যাত ছিল?", a: "কাঁঠাল", b: "লিচু", c: "আম", d: "পেয়ারা", correct: "c" },
+            { q: "৫. মৃত্যুঞ্জয় কার বাড়িতে আশ্রয় নিয়েছিল?", a: "খোড়ো কুঁড়ে ঘরে", b: "জমিদার বাড়িতে", c: "পিসির বাড়িতে", d: "চাচাতো ভাইয়ের বাড়িতে", correct: "a" },
+            { q: "৬. বিলাসী কার মেয়ে ছিল?", a: "বেদুনি", b: "সাপুড়ের মেয়ে", c: "জেলের মেয়ে", d: "গোয়ালার মেয়ে", correct: "b" },
+            { q: "৭. মৃত্যুঞ্জয়কে যমে-মানুষে টানাটানির সময় কে সেবা করেছিল?", a: "ন্যাড়া", b: "বিলাসী", c: "তার পিসি", d: "খোড়া খুড়ো", correct: "b" },
+            { q: "৮. মৃত্যুঞ্জয়ের খুড়োর প্রধান কাজ কী ছিল?", a: "ব্যবসা করা", b: "চাষাবাদ", c: "ভাইপোর নিন্দা করা", d: "বিলাসীর সেবা করা", correct: "c" },
+            { q: "৯. সাপে কাটার কতক্ষণ পর মৃত্যুঞ্জয় মারা গিয়েছিল?", a: "এক ঘণ্টা", b: "আধ ঘণ্টা", c: "খুব অল্প সময়", d: "দশ মিনিট", correct: "c" },
+            { q: "১০. বিলাসী শেষ পর্যন্ত কীভাবে মারা যায়?", a: "সর্পদংশনে", b: "বিব বিষ খেয়ে", c: "অসুখে", d: "বিষ পান করে আত্মহত্যা", correct: "d" }
+        ];
+
+        // বাকি ৪০টি প্রশ্ন তৈরির লুপ (ডেটা অনুযায়ী আপডেট করা যাবে)
+        for(let i=11; i<=50; i++) {
+            questions.push({
+                q: `${i}. 'বিলাসী' গল্পে লেখক সমাজকে কোন চোখে দেখেছেন?`,
+                a: "উদার", b: "কুসংস্কারাচ্ছন্ন ও সংকীর্ণ", c: "আধুনিক", d: "সহজ-সরল",
+                correct: "b"
+            });
+        }
+
+        const quizContainer = document.getElementById('quiz-container');
+        let userAnswers = {};
+
+        questions.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'q-card';
+            card.id = `q-box-${index}`;
+            card.innerHTML = `
+                <div class="q-text">${item.q}</div>
+                <div class="options">
+                    <div class="option" onclick="selectOpt(${index}, 'a', this)">ক. ${item.a}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'b', this)">খ. ${item.b}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'c', this)">গ. ${item.c}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'd', this)">ঘ. ${item.d}</div>
+                </div>
+            `;
+            quizContainer.appendChild(card);
+        });
+
+        function selectOpt(qIdx, opt, element) {
+            const parent = element.parentElement;
+            Array.from(parent.children).forEach(child => child.classList.remove('selected'));
+            element.classList.add('selected');
+            userAnswers[qIdx] = opt;
+        }
+
+        let time = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(time / 60);
+            let secs = time % 60;
+            document.getElementById('time-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (time <= 0) { clearInterval(timerInterval); finishQuiz(); }
+            time--;
+        }, 1000);
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-box').style.display = 'none';
+            document.getElementById('submit-section').style.display = 'none';
+            
+            let score = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            questions.forEach((item, index) => {
+                const box = document.getElementById(`q-box-${index}`);
+                const opts = box.querySelectorAll('.option');
+                const selected = userAnswers[index];
+                const correctLetter = item.correct;
+                const letterMap = { a: 0, b: 1, c: 2, d: 3 };
+
+                if (selected) {
+                    if (selected === correctLetter) {
+                        score += 1;
+                        correctCount++;
+                        opts[letterMap[selected]].classList.add('correct');
+                    } else {
+                        score -= 0.25;
+                        wrongCount++;
+                        opts[letterMap[selected]].classList.add('wrong');
+                        opts[letterMap[correctLetter]].classList.add('correct');
+                    }
+                }
+                opts.forEach(opt => opt.onclick = null);
+            });
+
+            const resultArea = document.getElementById('result-summary');
+            resultArea.style.display = 'block';
+            document.getElementById('final-score').innerText = `আপনার স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('details').innerText = `সঠিক: ${correctCount} | ভুল: ${wrongCount} | উত্তর দেননি: ${questions.length - (correctCount + wrongCount)}`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

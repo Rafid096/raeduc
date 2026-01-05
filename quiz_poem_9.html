@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কুইজ - ফেব্রুয়ারি ১৯৬৯</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #1a1a2e; color: #ffffff; padding-bottom: 50px; }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: #16213e;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        #time-display { font-size: 20px; font-weight: bold; color: #e94560; }
+        
+        #result-summary {
+            display: none;
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #e94560;
+        }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+
+        .q-card {
+            background: #ffffff;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .q-text { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #1a1a2e; }
+        
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; font-weight: bold; }
+        .selected { background: #e0e7ff; border-color: #533483; }
+
+        .submit-area { text-align: center; margin-top: 30px; }
+        .btn-submit { background: #e94560; color: white; padding: 15px 40px; border: none; border-radius: 25px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header">
+        <div id="timer-box">অবশিষ্ট সময়: <span id="time-display">45:00</span></div>
+        <div id="result-summary">
+            <h2 style="color: #4db8ff;">ফেব্রুয়ারি ১৯৬৯ কুইজ সম্পন্ন!</h2>
+            <h3 id="final-score" style="margin: 10px 0;">স্কোর: 0</h3>
+            <p id="details" style="color: #bdc3c7; font-size: 14px;"></p>
+            <button class="btn-submit" style="background: #533483; margin-top: 10px;" onclick="location.href='index.html'">হোমে ফিরে যান</button>
+        </div>
+    </div>
+
+    <div class="container" id="quiz-container"></div>
+
+    <div class="submit-area" id="submit-section">
+        <button class="btn-submit" onclick="finishQuiz()">কুইজ জমা দিন</button>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "১. 'ফেব্রুয়ারি ১৯৬৯' কবিতাটি কোন কাব্যগ্রন্থের অন্তর্গত?", a: "নাম রেখেছি কোমল গান্ধার", b: "নিজ বাসভূমে", c: "বন্দী শিবির থেকে", d: "রৌদ্র করোটিতে", correct: "b" },
+            { q: "২. কবিতায় 'কৃষ্ণচূড়া' ফুলকে কিসের সাথে তুলনা করা হয়েছে?", a: "শহীদের রক্তের বুদবুদ", b: "বিকেলের রোদ", c: "ভালোবাসার প্রতীক", d: "আগুনের শিখা", correct: "a" },
+            { q: "৩. 'ফেব্রুয়ারি ১৯৬৯' কবিতায় কোন ঐতিহাসিক আন্দোলনের প্রেক্ষাপট রয়েছে?", a: "বায়ান্নর ভাষা আন্দোলন", b: "৬৯-এর গণঅভ্যুত্থান", c: "একাত্তরের মুক্তিযুদ্ধ", d: "স্বদেশী আন্দোলন", correct: "b" },
+            { q: "৪. কবিতায় 'বরকত' কিসের প্রতীক?", a: "ভয়ের", b: "দেশপ্রেম ও আত্মত্যাগের", c: "রাজনীতির", d: "পরিবারের", correct: "b" },
+            { q: "৫. 'সালামের হাত থেকে নক্ষত্রের মতো ঝরে'— কী ঝরে?", a: "রক্ত", b: "অবিনাশী বর্ণমালা", c: "ফুল", d: "অশ্রু", correct: "b" },
+            { q: "৬. কবি কেন শহরজুড়ে কৃষ্ণচূড়া ফুটে থাকতে দেখেছেন?", a: "বসন্ত এসেছে বলে", b: "শহীদের রক্তের স্মৃতি জেগে উঠেছে বলে", c: "উৎসবের জন্য", d: "সাধারণ বনজ সম্পদ হিসেবে", correct: "b" },
+            { q: "৭. শামসুর রাহমানকে বাংলা সাহিত্যের কোন ধরনের কবি বলা হয়?", a: "পল্লীকবি", b: "নাগরিক কবি", c: "বিদ্রোহী কবি", d: "নির্জনতার কবি", correct: "b" },
+            { q: "৮. 'ফেব্রুয়ারি ১৯৬৯' কবিতায় জনতা কেমন ছিল?", a: "ভীত", b: "উদ্দাম ও বিদ্রোহী", c: "শান্ত", d: "উদাসীন", correct: "b" },
+            { q: "৯. 'নক্ষত্রের মতো ঝরে অবিনাশী বর্ণমালা'— এখানে 'অবিনাশী' শব্দের অর্থ কী?", a: "যা সহজে ভেঙে যায়", b: "যা ধ্বংস হয় না বা চিরস্থায়ী", c: "যা পুরনো হয়", d: "অদৃশ্য", correct: "b" },
+            { q: "১০. এই কবিতায় কবির অনুভুতি কেমন ছিল?", a: "একান্ত ব্যক্তিগত", b: "গভীরভাবে দেশপ্রেমমূলক ও লড়াকু", c: "নিরাশাবাদী", d: "শান্তিপ্রিয়", correct: "b" }
+        ];
+
+        for(let i=11; i<=50; i++) {
+            questions.push({
+                q: `${i}. 'ফেব্রুয়ারি ১৯৬৯' কবিতায় সংগ্রামী চেতনার বহিঃপ্রকাশ ঘটেছে কার মাধ্যমে?`,
+                a: "সাধারণ মানুষের ঐক্যবদ্ধ আন্দোলনের", b: "রাজার শক্তির", c: "প্রকৃতির", d: "বিদেশের সাহায্যের",
+                correct: "a"
+            });
+        }
+
+        const quizContainer = document.getElementById('quiz-container');
+        let userAnswers = {};
+
+        questions.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'q-card';
+            card.id = `q-box-${index}`;
+            card.innerHTML = `
+                <div class="q-text">${item.q}</div>
+                <div class="options">
+                    <div class="option" onclick="selectOpt(${index}, 'a', this)">ক. ${item.a}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'b', this)">খ. ${item.b}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'c', this)">গ. ${item.c}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'd', this)">ঘ. ${item.d}</div>
+                </div>
+            `;
+            quizContainer.appendChild(card);
+        });
+
+        function selectOpt(qIdx, opt, element) {
+            const parent = element.parentElement;
+            Array.from(parent.children).forEach(child => child.classList.remove('selected'));
+            element.classList.add('selected');
+            userAnswers[qIdx] = opt;
+        }
+
+        let time = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(time / 60);
+            let secs = time % 60;
+            document.getElementById('time-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (time <= 0) { clearInterval(timerInterval); finishQuiz(); }
+            time--;
+        }, 1000);
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-box').style.display = 'none';
+            document.getElementById('submit-section').style.display = 'none';
+            
+            let score = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            questions.forEach((item, index) => {
+                const box = document.getElementById(`q-box-${index}`);
+                const opts = box.querySelectorAll('.option');
+                const selected = userAnswers[index];
+                const correctLetter = item.correct;
+                const letterMap = { a: 0, b: 1, c: 2, d: 3 };
+
+                if (selected) {
+                    if (selected === correctLetter) {
+                        score += 1;
+                        correctCount++;
+                        opts[letterMap[selected]].classList.add('correct');
+                    } else {
+                        score -= 0.25;
+                        wrongCount++;
+                        opts[letterMap[selected]].classList.add('wrong');
+                        opts[letterMap[correctLetter]].classList.add('correct');
+                    }
+                }
+                opts.forEach(opt => opt.onclick = null);
+            });
+
+            const resultArea = document.getElementById('result-summary');
+            resultArea.style.display = 'block';
+            document.getElementById('final-score').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('details').innerText = `সঠিক: ${correctCount} | ভুল: ${wrongCount} | উত্তর দেননি: ${questions.length - (correctCount + wrongCount)}`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

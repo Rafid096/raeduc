@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কুইজ - বায়ান্নর দিনগুলো</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding-bottom: 50px; }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: #1c2536;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        #time-display { font-size: 20px; font-weight: bold; color: #e74c3c; }
+        
+        #result-summary {
+            display: none;
+            background: #232d3f;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #764ba2;
+        }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+
+        .q-card {
+            background: #ffffff;
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .q-text { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #121826; }
+        
+        .options { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; font-weight: bold; }
+        .wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; font-weight: bold; }
+        .selected { background: #e0e7ff; border-color: #764ba2; }
+
+        .submit-area { text-align: center; margin-top: 30px; }
+        .btn-submit { background: #764ba2; color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header">
+        <div id="timer-box">অবশিষ্ট সময়: <span id="time-display">45:00</span></div>
+        <div id="result-summary">
+            <h2 style="color: #2ecc71;">বায়ান্নর দিনগুলো কুইজ সম্পন্ন!</h2>
+            <h3 id="final-score" style="margin: 10px 0;">স্কোর: 0</h3>
+            <p id="details" style="color: #bdc3c7; font-size: 14px;"></p>
+            <button class="btn-submit" style="background: #475569; margin-top: 10px;" onclick="location.href='index.html'">হোমে ফিরে যান</button>
+        </div>
+    </div>
+
+    <div class="container" id="quiz-container"></div>
+
+    <div class="submit-area" id="submit-section">
+        <button class="btn-submit" onclick="finishQuiz()">পরীক্ষা শেষ করুন</button>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "১. 'বায়ান্নর দিনগুলো' রচনাটি কার ডায়েরি বা আত্মজীবনী থেকে নেওয়া হয়েছে?", a: "মওলানা ভাসানী", b: "শেখ মুজিবুর রহমান", c: "তাজউদ্দীন আহমদ", d: "শওকত ওসমান", correct: "b" },
+            { q: "২. শেখ মুজিবুর রহমান কোন জেলে অনশন করেছিলেন?", a: "ঢাকা জেল", b: "রাজশাহী জেল", c: "ফরিদপুর জেল", d: "ময়মনসিংহ জেল", correct: "c" },
+            { q: "৩. অনশন ধর্মঘটের সময় বঙ্গবন্ধুর সাথে আর কে অনশন করেছিলেন?", a: "মহিউদ্দিন আহমদ", b: "শওকত আলী", c: "আবুল হাশিম", d: "খন্দকার মোশতাক", correct: "a" },
+            { q: "৪. বঙ্গবন্ধু অনশন শুরু করার কত দিন পর মুক্তি পান?", a: "১০ দিন", b: "১৫ দিন", c: "১৩ দিন", d: "১২ দিন", correct: "c" },
+            { q: "৫. ১৯৫২ সালের ২১শে ফেব্রুয়ারি কেন বঙ্গবন্ধু জেলে ছিলেন?", a: "চুরির দায়ে", b: "রাজবন্দী হিসেবে", c: "মারপিটের জন্য", d: "বিদেশে যাওয়ার অপরাধে", correct: "b" },
+            { q: "৬. মুক্তির খবর আসার সময় বঙ্গবন্ধু কোথায় শুয়ে ছিলেন?", a: "মেঝেতে", b: "হাসপাতালের বিছানায়", c: "থানায়", d: "গাড়িতে", correct: "b" },
+            { q: "৭. জেল কর্তৃপক্ষ বঙ্গবন্ধুকে নাক দিয়ে কী খাওয়ানোর চেষ্টা করেছিল?", a: "জল", b: "তরল খাবার", c: "দুধ", d: "ফলের রস", correct: "b" },
+            { q: "৮. ফরিদপুর জেলে যাওয়ার সময় তারা কোন ঘাট দিয়ে নদী পার হয়েছিলেন?", a: "আরিচা", b: "মাওয়া", c: "নারায়ণগঞ্জ", d: "গোয়ালন্দ", correct: "c" },
+            { q: "৯. অনশনরত অবস্থায় বঙ্গবন্ধু কয়টি চিঠি লিখেছিলেন?", a: "দুইটি", b: "তিনটি", c: "চারটি", d: "পাঁচটি", correct: "c" },
+            { q: "১০. 'মানুষের যখন পতন আসে তখন সে পদে পদে ভুল করতে থাকে'—এটি কার উক্তি?", a: "রবীন্দ্রনাথ ঠাকুর", b: "শেখ মুজিবুর রহমান", c: "শরৎচন্দ্র", d: "নজরুল ইসলাম", correct: "b" }
+        ];
+
+        // বাকি ৪০টি প্রশ্ন তৈরির নমুনা
+        for(let i=11; i<=50; i++) {
+            questions.push({
+                q: `${i}. ১৯৫২ সালের ভাষা আন্দোলনের সময় শেখ মুজিবুর রহমানের মানসিক অবস্থা কেমন ছিল?`,
+                a: "ভীতু", b: "দৃঢ়চেতা ও দেশপ্রেমিক", c: "অস্থির", d: "উদাসীন",
+                correct: "b"
+            });
+        }
+
+        const quizContainer = document.getElementById('quiz-container');
+        let userAnswers = {};
+
+        questions.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'q-card';
+            card.id = `q-box-${index}`;
+            card.innerHTML = `
+                <div class="q-text">${item.q}</div>
+                <div class="options">
+                    <div class="option" onclick="selectOpt(${index}, 'a', this)">ক. ${item.a}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'b', this)">খ. ${item.b}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'c', this)">গ. ${item.c}</div>
+                    <div class="option" onclick="selectOpt(${index}, 'd', this)">ঘ. ${item.d}</div>
+                </div>
+            `;
+            quizContainer.appendChild(card);
+        });
+
+        function selectOpt(qIdx, opt, element) {
+            const parent = element.parentElement;
+            Array.from(parent.children).forEach(child => child.classList.remove('selected'));
+            element.classList.add('selected');
+            userAnswers[qIdx] = opt;
+        }
+
+        let time = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(time / 60);
+            let secs = time % 60;
+            document.getElementById('time-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (time <= 0) { clearInterval(timerInterval); finishQuiz(); }
+            time--;
+        }, 1000);
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-box').style.display = 'none';
+            document.getElementById('submit-section').style.display = 'none';
+            
+            let score = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            questions.forEach((item, index) => {
+                const box = document.getElementById(`q-box-${index}`);
+                const opts = box.querySelectorAll('.option');
+                const selected = userAnswers[index];
+                const correctLetter = item.correct;
+                const letterMap = { a: 0, b: 1, c: 2, d: 3 };
+
+                if (selected) {
+                    if (selected === correctLetter) {
+                        score += 1;
+                        correctCount++;
+                        opts[letterMap[selected]].classList.add('correct');
+                    } else {
+                        score -= 0.25;
+                        wrongCount++;
+                        opts[letterMap[selected]].classList.add('wrong');
+                        opts[letterMap[correctLetter]].classList.add('correct');
+                    }
+                }
+                opts.forEach(opt => opt.onclick = null);
+            });
+
+            const resultArea = document.getElementById('result-summary');
+            resultArea.style.display = 'block';
+            document.getElementById('final-score').innerText = `আপনার স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('details').innerText = `সঠিক: ${correctCount} | ভুল: ${wrongCount} | উত্তর দেননি: ${questions.length - (correctCount + wrongCount)}`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
