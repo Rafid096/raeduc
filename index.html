@@ -32,6 +32,14 @@
         <button class="login-btn" onclick="login()">তথ্য নিশ্চিত করুন</button>
     </div>
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // আপনার পাবলিক কি দিয়ে ইনিশিয়ালাইজ করা হলো
+          emailjs.init("3-BURn5O3hxXkTOy3"); 
+       })();
+    </script>
+
     <script>
         // পেজ লোড হওয়ার সময় চেক করবে ইউজার আগে থেকে লগইন করা কি না
         window.onload = function() {
@@ -49,11 +57,27 @@
                 return;
             }
 
+            // ইমেইল টেমপ্লেটের ভেরিয়েবল অনুযায়ী ডাটা পাঠানো হচ্ছে
+            const templateParams = {
+                from_name: name,         // আপনার টেমপ্লেটের {{from_name}}
+                user_phone: phone,       // আপনার টেমপ্লেটের {{user_phone}}
+                date: new Date().toLocaleString('bn-BD') // আপনার টেমপ্লেটের {{date}}
+            };
+
+            // EmailJS এর মাধ্যমে আপনার ইমেইলে তথ্য পাঠানো হচ্ছে (আপনার আইডিগুলো ব্যবহার করা হয়েছে)
+            emailjs.send('service_ub9ecp4', 'template_1umzdjx', templateParams)
+                .then(function(response) {
+                   console.log('ইমেইল সফলভাবে পাঠানো হয়েছে!');
+                }, function(error) {
+                   console.error('ইমেইল পাঠানো ব্যর্থ হয়েছে...', error);
+                });
+
             // তথ্যগুলো ব্রাউজারে স্থায়ীভাবে সেভ করা হচ্ছে
             localStorage.setItem('studentName', name);
             localStorage.setItem('studentPhone', phone);
             localStorage.setItem('isLoggedIn', 'true'); // লগইন অবস্থা মনে রাখার জন্য
 
+            // সব শেষে হোম পেজে নিয়ে যাবে
             window.location.href = "home.html"; 
         }
     </script>
