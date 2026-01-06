@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Poems | কুইজ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Dream Poems - Unit 2: Lesson 2</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "Who is the author of the poem 'Dreams'?", a: "Langston Hughes", opts: ["D.H. Lawrence", "Langston Hughes", "Robert Frost", "John Keats"] },
+            { q: "According to Hughes, life without dreams is like a ______ bird.", a: "Broken-winged", opts: ["Beautiful", "Broken-winged", "Singing", "Flying"] },
+            { q: "A dreamless life is compared to a ______ field.", a: "Barren", opts: ["Fertile", "Barren", "Green", "Golden"] },
+            { q: "What covers the barren field in Hughes' poem?", a: "Snow", opts: ["Rain", "Dust", "Snow", "Leaves"] },
+            { q: "Langston Hughes was an ______ poet.", a: "American", opts: ["English", "American", "Irish", "Indian"] },
+            { q: "The word 'barren' means?", a: "Unproductive", opts: ["Fruitful", "Unproductive", "Lush", "Busy"] },
+            { q: "Hughes advises to 'hold ______ to dreams'.", a: "Fast", opts: ["Tight", "Fast", "Close", "Hard"] },
+            { q: "In D.H. Lawrence's poem, how do all people dream?", a: "But not equally", opts: ["Equally", "Every night", "But not equally", "Quietly"] },
+            { q: "Where do night dreamers dream?", a: "In the dusty recesses of their mind", opts: ["In a garden", "In the dusty recesses of their mind", "In the sky", "In a book"] },
+            { q: "What happens when night dreamers wake up?", a: "They find it was vanity", opts: ["They feel happy", "They find it was vanity", "They get rich", "They forget names"] },
+            { q: "Who are the dangerous dreamers according to Lawrence?", a: "Dreamers of the day", opts: ["Night dreamers", "Dreamers of the day", "Children", "Old people"] },
+            { q: "Why are day dreamers dangerous?", a: "They act on their dreams", opts: ["They are angry", "They act on their dreams", "They never sleep", "They are strong"] },
+            { q: "Day dreamers dream with ______ eyes.", a: "Open", opts: ["Closed", "Half", "Open", "Blind"] },
+            { q: "The word 'vanity' in Lawrence's poem means?", a: "Worthlessness", opts: ["Pride", "Worthlessness", "Beauty", "Glory"] },
+            { q: "Lawrence's dreamers want to make their dreams ______.", a: "Come true", opts: ["Fade away", "Come true", "Scary", "Funny"] },
+            { q: "The poem 'Dreams' has ______ stanzas.", a: "Two", opts: ["One", "Two", "Three", "Four"] },
+            { q: "The word 'recesses' means?", a: "Inner parts", opts: ["Front parts", "Inner parts", "Playtime", "Top"] },
+            { q: "Langston Hughes was a key figure of the ______ Renaissance.", a: "Harlem", opts: ["Italian", "Harlem", "English", "French"] },
+            { q: "The tone of Hughes' poem is ______.", a: "Didactic", opts: ["Humorous", "Didactic", "Sad", "Angry"] },
+            { q: "The bird in Hughes' poem cannot ______.", a: "Fly", opts: ["Sing", "Fly", "Eat", "See"] },
+            { q: "What is the central theme of both poems?", a: "Importance of dreams", opts: ["Nature", "Importance of dreams", "War", "Animals"] },
+            { q: "D.H. Lawrence was an ______ writer.", a: "English", opts: ["American", "English", "Canadian", "Australian"] },
+            { q: "The word 'dusty' suggests the dreams are ______.", a: "Hidden or old", opts: ["New", "Hidden or old", "Bright", "Clean"] },
+            { q: "To 'act on dreams' means to ______.", a: "Perform on stage", opts: ["Work to achieve them", "Perform on stage", "Forget them", "Talk about them"] },
+            { q: "A 'broken-winged bird' is a ______.", a: "Metaphor", opts: ["Simile", "Metaphor", "Personification", "Alliteration"] },
+            { q: "The opposite of 'fast' in 'hold fast' is ______.", a: "Loose", opts: ["Slow", "Loose", "Quick", "Strong"] },
+            { q: "Day dreamers are dangerous because they are ______.", a: "Practical", opts: ["Lazy", "Practical", "Scared", "Silent"] },
+            { q: "Hughes' poem emphasizes ______.", a: "Persistence", opts: ["Sleep", "Persistence", "Fear", "Wealth"] },
+            { q: "The word 'frozen' implies ______.", a: "Cold weather", opts: ["Cold weather", "Lack of life", "Ice cream", "Winter"] },
+            { q: "Both poets agree that dreams are ______.", a: "Necessary", opts: ["Useless", "Necessary", "Boring", "Only for kids"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

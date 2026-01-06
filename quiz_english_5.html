@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Have a Dream | কুইজ</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>I Have a Dream - Unit 2: Lesson 3</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "Who delivered the 'I Have a Dream' speech?", a: "Martin Luther King Jr.", opts: ["Abraham Lincoln", "Martin Luther King Jr.", "Malcolm X", "Nelson Mandela"] },
+            { q: "In which year was the speech delivered?", a: "1963", opts: ["1953", "1963", "1971", "1968"] },
+            { q: "Where was the speech delivered?", a: "Lincoln Memorial", opts: ["White House", "Lincoln Memorial", "Capitol Hill", "Harvard University"] },
+            { q: "Martin Luther King Jr. was a leader in the ______.", a: "Civil Rights Movement", opts: ["Anti-War Movement", "Civil Rights Movement", "Labor Movement", "Women's Rights"] },
+            { q: "What does King dream his four children will be judged by?", a: "The content of their character", opts: ["The color of their skin", "The content of their character", "Their wealth", "Their education"] },
+            { q: "The word 'segregation' means?", a: "Separation based on race", opts: ["Unity", "Separation based on race", "Equality", "Freedom"] },
+            { q: "King mentions that the Negro is still not ______.", a: "Free", opts: ["Educated", "Free", "Wealthy", "Respected"] },
+            { q: "The word 'languishing' means?", a: "Suffering in a bad situation", opts: ["Enjoying life", "Suffering in a bad situation", "Working hard", "Traveling"] },
+            { q: "King compares the Emancipation Proclamation to a ______.", a: "Great beacon light of hope", opts: ["Dark night", "Great beacon light of hope", "Heavy burden", "Signed check"] },
+            { q: "Which state does King describe as 'sweltering with the heat of injustice'?", a: "Mississippi", opts: ["Georgia", "Mississippi", "Alabama", "New York"] },
+            { q: "King's speech ends with the famous phrase: 'Free at ______!'", a: "Last", opts: ["Once", "Last", "Home", "Finally"] },
+            { q: "The word 'creed' means?", a: "A set of beliefs", opts: ["A law", "A set of beliefs", "A song", "A dream"] },
+            { q: "King was a Nobel ______ Prize winner.", a: "Peace", opts: ["Physics", "Peace", "Literature", "Chemistry"] },
+            { q: "What is the 'bad check' King refers to?", a: "The failed promises of equality", opts: ["A stolen money", "The failed promises of equality", "A business deal", "Taxes"] },
+            { q: "King calls for an end to ______.", a: "Racial discrimination", opts: ["Space research", "Racial discrimination", "Music festivals", "Voting"] },
+            { q: "The word 'tribulation' means?", a: "Great trouble or suffering", opts: ["Happiness", "Great trouble or suffering", "Victory", "Peace"] },
+            { q: "King says, 'We must not allow our creative protest to degenerate into ______.'", a: "Physical violence", opts: ["Laughter", "Physical violence", "Silence", "Poetry"] },
+            { q: "The word 'exalted' means?", a: "Raised to a high rank", opts: ["Lowered", "Raised to a high rank", "Ignored", "Destroyed"] },
+            { q: "Martin Luther King Jr. followed the philosophy of ______.", a: "Non-violence", opts: ["War", "Non-violence", "Dictatorship", "Capitalism"] },
+            { q: "King refers to the 'Manacles of ______'.", a: "Segregation", opts: ["Freedom", "Segregation", "Wealth", "Iron"] },
+            { q: "The word 'oasis' in the text refers to ______.", a: "A place of peace", opts: ["A desert", "A place of peace", "A prison", "A city"] },
+            { q: "How many years after the Emancipation Proclamation was the speech given?", a: "One hundred", opts: ["Fifty", "One hundred", "Ten", "Two hundred"] },
+            { q: "The word 'prodigious' means?", a: "Enormous", opts: ["Tiny", "Enormous", "Fake", "Ugly"] },
+            { q: "King wants freedom to ring from every ______.", a: "Hill and molehill", opts: ["House", "Hill and molehill", "Factory", "Church"] },
+            { q: "What does 'nullification' mean in the text?", a: "Canceling a law", opts: ["Making a law", "Canceling a law", "Supporting a law", "Reading a law"] },
+            { q: "King says they have come to the capital to 'cash a ______'.", a: "Check", opts: ["Gift", "Check", "Ticket", "Bill"] },
+            { q: "The word 'mighty' means?", a: "Powerful", opts: ["Weak", "Powerful", "Small", "Old"] },
+            { q: "King's dream is deeply rooted in the ______ dream.", a: "American", opts: ["British", "American", "Global", "Personal"] },
+            { q: "The word 'jangling' means?", a: "Harsh sounding", opts: ["Sweet sounding", "Harsh sounding", "Silent", "Fast"] },
+            { q: "Martin Luther King Jr. was assassinated in ______.", a: "1968", opts: ["1963", "1968", "1970", "1980"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid" id="options-${index}">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Adulteration | কুইজ</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Food Adulteration - Unit 3: Lesson 1</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "What is the main concern of the passage?", a: "Food Adulteration", opts: ["Food Security", "Food Adulteration", "Nutrition", "Farming"] },
+            { q: "Which chemical is used to ripen fruits artificially?", a: "Ethylene", opts: ["Formalin", "Ethylene", "DDT", "Calcium Carbide"] },
+            { q: "What is 'Formalin' mainly used for?", a: "Preserving food", opts: ["Cooking", "Preserving food", "Ripening fruits", "Flavoring"] },
+            { q: "The term 'adulteration' means?", a: "Contamination", opts: ["Purification", "Contamination", "Decoration", "Production"] },
+            { q: "Eating adulterated food can cause ______.", a: "Fatal diseases", opts: ["Instant energy", "Fatal diseases", "Better sleep", "Fast growth"] },
+            { q: "Which organ is most affected by chemicals in food?", a: "Kidney", opts: ["Kidney", "Hair", "Skin", "Bones"] },
+            { q: "The word 'pesticide' is used to ______.", a: "Kill insects", opts: ["Grow plants", "Kill insects", "Preserve milk", "Clean water"] },
+            { q: "Adulteration is a threat to ______.", a: "Public health", opts: ["Individual fashion", "Public health", "Space research", "Building roads"] },
+            { q: "What does 'toxic' mean?", a: "Poisonous", opts: ["Sweet", "Poisonous", "Healthy", "Natural"] },
+            { q: "Milk is often adulterated with ______.", a: "Dirty water", opts: ["Honey", "Dirty water", "Fruit juice", "Sugar"] },
+            { q: "Adulteration is mostly done for ______.", a: "Profit", opts: ["Charity", "Profit", "Education", "Safety"] },
+            { q: "The word 'unscrupulous' means?", a: "Dishonest", opts: ["Honest", "Dishonest", "Kind", "Active"] },
+            { q: "What kind of dyes are used in food?", a: "Textile dyes", opts: ["Natural dyes", "Textile dyes", "Food grade colors", "Watercolors"] },
+            { q: "Formalin can cause ______.", a: "Cancer", opts: ["Flu", "Cancer", "Fever", "Back pain"] },
+            { q: "The government should enforce ______.", a: "Strict laws", opts: ["Flexible rules", "Strict laws", "No rules", "Taxes"] },
+            { q: "Consumer ______ is necessary to stop adulteration.", a: "Awareness", opts: ["Silence", "Awareness", "Greed", "Laziness"] },
+            { q: "The word 'deteriorate' means?", a: "To become worse", opts: ["To improve", "To become worse", "To stay same", "To shine"] },
+            { q: "Fruits are often coated with ______ to look fresh.", a: "Wax", opts: ["Wax", "Paint", "Sugar", "Oil"] },
+            { q: "Turmeric powder is often mixed with ______.", a: "Lead chromate", opts: ["Salt", "Lead chromate", "Sugar", "Pepper"] },
+            { q: "The word 'peril' means?", a: "Danger", opts: ["Safety", "Danger", "Profit", "Game"] },
+            { q: "Bacteria like E. coli is found in ______ food.", a: "Street", opts: ["Fresh", "Street", "Boiled", "Organic"] },
+            { q: "What does 'ban' mean?", a: "Prohibit", opts: ["Allow", "Prohibit", "Invite", "Sell"] },
+            { q: "Public ______ should be mobilized against adulteration.", a: "Opinion", opts: ["Money", "Opinion", "Furniture", "Cars"] },
+            { q: "The word 'lethal' means?", a: "Deadly", opts: ["Helpful", "Deadly", "Funny", "Cheap"] },
+            { q: "Adulterated food is especially dangerous for ______.", a: "Children", opts: ["Robots", "Children", "Athletes", "Doctors"] },
+            { q: "The word 'stringent' refers to ______.", a: "Strict", opts: ["Loose", "Strict", "Old", "Modern"] },
+            { q: "Adulteration ruins the ______ of the nation.", a: "Health", opts: ["Education", "Health", "Roads", "Weather"] },
+            { q: "What is the opposite of 'Artificial'?", a: "Natural", opts: ["Fake", "Natural", "Man-made", "Toxic"] },
+            { q: "The word 'alarming' means?", a: "Worrying", opts: ["Funny", "Worrying", "Quiet", "Bright"] },
+            { q: "BSTI stands for Bangladesh ______ and Testing Institution.", a: "Standards", opts: ["Science", "Standards", "Safety", "Society"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid" id="options-${index}">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

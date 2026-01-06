@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Women | কুইজ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Two Women - Unit 1: Lesson 3</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "Valentina Tereshkova was born in which country?", a: "Russia (USSR)", opts: ["USA", "Russia (USSR)", "India", "UK") },
+            { q: "In what year was Tereshkova born?", a: "1937", opts: ["1935", "1937", "1940", "1945"] },
+            { q: "What was Tereshkova's hobby that led her to space selection?", a: "Skydiving", opts: ["Swimming", "Skydiving", "Mountain Climbing", "Driving"] },
+            { q: "Which spacecraft carried Tereshkova into space?", a: "Vostok-6", opts: ["Vostok-1", "Vostok-6", "Apollo-11", "Soyuz"] },
+            { q: "Tereshkova was the first ______ to fly in space.", a: "Woman", opts: ["Person", "Woman", "Animal", "Doctor"] },
+            { q: "How many times did Tereshkova orbit the Earth?", a: "48", opts: ["10", "24", "48", "72"] },
+            { q: "Kalpana Chawla was born in which Indian state?", a: "Haryana", opts: ["Punjab", "Haryana", "Delhi", "Gujarat"] },
+            { q: "Where did Kalpana Chawla move for her higher studies in 1982?", a: "USA", opts: ["UK", "USA", "Russia", "Canada"] },
+            { q: "Kalpana Chawla's first space mission was in which year?", a: "1997", opts: ["1995", "1997", "2000", "2003"] },
+            { q: "What was the name of the space shuttle that disintegrated in 2003?", a: "Columbia", opts: ["Challenger", "Columbia", "Discovery", "Atlantis"] },
+            { q: "How many crew members died in the Columbia disaster?", a: "7", opts: ["5", "7", "10", "3"] },
+            { q: "The word 'disintegrate' means?", a: "Break into small pieces", opts: ["Fly fast", "Break into small pieces", "Land safely", "Ignite"] },
+            { q: "Tereshkova spent almost ______ days in space during her mission.", a: "Three", opts: ["One", "Three", "Ten", "Thirty"] },
+            { q: "What was Tereshkova's job before being selected as a cosmonaut?", a: "Textile worker", opts: ["Teacher", "Doctor", "Textile worker", "Engineer"] },
+            { q: "Kalpana Chawla was a naturalized ______ citizen.", a: "US", opts: ["British", "Russian", "US", "French"] },
+            { q: "What did Chawla study for her Bachelor's degree?", a: "Aeronautical Engineering", opts: ["Medicine", "Physics", "Aeronautical Engineering", "Mathematics"] },
+            { q: "Tereshkova was selected from more than ______ applicants.", a: "400", opts: ["100", "400", "1000", "50"] },
+            { q: "The mission Vostok-6 was launched on ______.", a: "16 June 1963", opts: ["12 April 1961", "16 June 1963", "20 July 1969", "1 January 1970"] },
+            { q: "Who was the first human to fly in space?", a: "Yuri Gagarin", opts: ["Neil Armstrong", "Yuri Gagarin", "Valentina Tereshkova", "John Glenn"] },
+            { q: "The word 'cosmonaut' is used in which country?", a: "Russia", opts: ["USA", "Russia", "India", "China"] },
+            { q: "Chawla died during her ______ space mission.", a: "Second", opts: ["First", "Second", "Third", "Fourth"] },
+            { q: "What was the reason for the Columbia shuttle disaster?", a: "Damaged heat shield", opts: ["Fuel leak", "Engine failure", "Damaged heat shield", "Pilot error"] },
+            { q: "Where did Columbia disintegrate?", a: "Over Texas", opts: ["Over India", "Over Florida", "Over Texas", "Over Moscow"] },
+            { q: "The word 'enormous' means?", a: "Very large", opts: ["Tiny", "Very large", "Brave", "Fast"] },
+            { q: "Tereshkova's father was a ______.", a: "Tractor driver", opts: ["Pilot", "Scientist", "Tractor driver", "Doctor"] },
+            { q: "Chawla wanted to become an ______ since her childhood.", a: "Astronaut", opts: ["Astronaut", "Artist", "Singer", "Lawyer"] },
+            { q: "Tereshkova logged more flight time than the combined times of ______.", a: "All US astronauts", opts: ["All US astronauts", "Gagarin", "NASA pilots", "Her team"] },
+            { q: "The word 'valiant' means?", a: "Brave", opts: ["Fearful", "Brave", "Rich", "Smart"] },
+            { q: "In 1991, Chawla joined NASA as a ______.", a: "Research scientist", opts: ["Pilot", "Research scientist", "Technician", "Secretary"] },
+            { q: "How many minutes before landing did Columbia lose contact?", a: "16", opts: ["10", "16", "20", "5"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid" id="options-${index}">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

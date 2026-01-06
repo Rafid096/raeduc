@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Unforgettable History | কুইজ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; transition: 0.3s; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        
+        /* সঠিক ও ভুল উত্তরের কালার */
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>The Unforgettable History</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        // আপনার ৩০টি প্রশ্ন এখানে রয়েছে
+        const quizData = [
+            { q: "When was the historic speech delivered?", a: "7 March 1971", opts: ["7 March 1971", "26 March 1971", "16 December 1971", "21 February 1952"] },
+            { q: "Where was the 7th March speech delivered?", a: "Race Course Maidan", opts: ["Paltan Maidan", "Race Course Maidan", "Dhanmondi 32", "Central Shaheed Minar"] },
+            { q: "Who called for the assembly in March 1971?", a: "Yahya Khan", opts: ["Zulfikar Ali Bhutto", "Yahya Khan", "Tikka Khan", "Ayub Khan"] },
+            { q: "What does 'emancipation' stand for?", a: "Freedom", opts: ["Slavery", "Freedom", "War", "Agreement"] },
+            { q: "The streets of Dhaka were stained with blood in?", a: "1952", opts: ["1952", "1966", "1969", "1970"] },
+            { q: "In 1966, the movement was known as?", a: "Six-point movement", opts: ["Language movement", "Six-point movement", "Mass upsurge", "Non-cooperation"] },
+            { q: "Bangabandhu asked people to turn every house into a?", a: "Fortress", opts: ["School", "Factory", "Fortress", "Hospital"] },
+            { q: "What did the Martial Law aim at?", a: "Enslaving people", opts: ["Helping people", "Enslaving people", "Freeing people", "Developing nation"] },
+            { q: "Yahya Khan was the _____ of Pakistan.", a: "President", opts: ["Prime Minister", "President", "Governor", "Army Chief"] },
+            { q: "Who took the responsibility of the government after Ayub Khan?", a: "Yahya Khan", opts: ["Bhutto", "Yahya Khan", "Mujib", "Tikka Khan"] },
+            { q: "What was the duration of the speech?", a: "18 minutes", opts: ["10 minutes", "15 minutes", "18 minutes", "25 minutes"] },
+            { q: "The speech is registered as part of world's documentary heritage by?", a: "UNESCO", opts: ["UNICEF", "UNESCO", "WHO", "UNDP"] },
+            { q: "Bangabandhu met Yahya Khan on?", a: "15 January", opts: ["15 January", "7 March", "25 March", "10 January"] },
+            { q: "What does 'strive' mean?", a: "Try hard", opts: ["Sleep", "Try hard", "Run away", "Argue"] },
+            { q: "The Bengali people wanted to live as _____.", a: "Free citizens", opts: ["Slaves", "Free citizens", "Refugees", "Prisoners"] },
+            { q: "Who did not attend the assembly from West Pakistan?", a: "Bhutto", opts: ["Yahya", "Bhutto", "Ayub", "Tikka"] },
+            { q: "Bangabandhu was the leader of _____.", a: "Majority party", opts: ["Minority party", "Majority party", "Opposition", "Army"] },
+            { q: "What was the main demand of Bangabandhu?", a: "Transfer of power", opts: ["Money", "Transfer of power", "Ministership", "War"] },
+            { q: "The speech was given to around _____ people.", a: "1 million", opts: ["0.5 million", "1 million", "2 million", "5 million"] },
+            { q: "Which year saw a mass upsurge in East Pakistan?", a: "1969", opts: ["1952", "1966", "1969", "1971"] },
+            { q: "The phrase 'Build a fortress in every house' means?", a: "Prepare for war", opts: ["Build walls", "Prepare for war", "Stay safe", "Lock doors"] },
+            { q: "What does 'unforgettable' signify?", a: "Can't be forgotten", opts: ["Easily forgotten", "Can't be forgotten", "Boring", "Common"] },
+            { q: "Bangabandhu wanted the struggle for?", a: "Independence", opts: ["Wealth", "Independence", "Business", "Rank"] },
+            { q: "Who shed blood in 1952?", a: "Bengalis", opts: ["Pakistanis", "Bengalis", "Indians", "British"] },
+            { q: "The speech was _____.", a: "Extempore", opts: ["Written", "Extempore", "Read out", "Recorded before"] },
+            { q: "How many points did Mujib place in the speech?", a: "4", opts: ["6", "4", "7", "11"] },
+            { q: "The speech inspired the _____.", a: "Liberation War", opts: ["Language Movement", "Liberation War", "World War", "Elections"] },
+            { q: "Bangabandhu was the 'Poet of _____'.", a: "Politics", opts: ["Nature", "Politics", "Love", "War"] },
+            { q: "What does 'agony' mean?", a: "Extreme pain", opts: ["Happiness", "Extreme pain", "Anger", "Confusion"] },
+            { q: "The speech was delivered in _____.", a: "Broad daylight", opts: ["Broad daylight", "Night", "Evening", "Early morning"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid" id="options-${index}">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                
+                // যদি ইউজার উত্তর দিয়ে থাকে কেবল তখনই কালার হবে
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1;
+                        correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25;
+                        wrong++;
+                        selected.parentElement.classList.add('wrong'); // ইউজারের ভুল উত্তর লাল
+                        correctLabel.classList.add('correct'); // সঠিক উত্তরটি সবুজ
+                    }
+                } else {
+                    unattempted++;
+                    // উত্তর না দিলে কোনো কালার হবে না
+                }
+                
+                // সব ইনপুট লক করে দেওয়া
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            // স্ক্রিন উপরে নিয়ে যাওয়া
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // ফলাফল দেখানো
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

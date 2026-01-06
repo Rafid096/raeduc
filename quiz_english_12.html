@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Rights | কুইজ</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Human Rights - Unit 8: Lesson 1</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "What are human rights?", a: "Rights inherent to all human beings", opts: ["Rights only for rich", "Rights inherent to all human beings", "Rights for politicians", "Rights for adults only"] },
+            { q: "The Universal Declaration of Human Rights was adopted by ______.", a: "The United Nations", opts: ["The British Parliament", "The United Nations", "The US Congress", "The Red Cross"] },
+            { q: "In which year was the UDHR adopted?", a: "1948", opts: ["1945", "1948", "1950", "1960"] },
+            { q: "All human beings are born ______ and equal in dignity.", a: "Free", opts: ["Rich", "Free", "Strong", "Weak"] },
+            { q: "Which article states that everyone has the right to life, liberty, and security?", a: "Article 3", opts: ["Article 1", "Article 3", "Article 5", "Article 10"] },
+            { q: "The word 'inherent' means ______.", a: "Existing in something as a permanent attribute", opts: ["Temporary", "Existing in something as a permanent attribute", "Given by government", "Bought with money"] },
+            { q: "Everyone has the right to education. This is a ______ right.", a: "Fundamental", opts: ["Optional", "Fundamental", "Private", "Secondary"] },
+            { q: "The word 'discrimination' means ______.", a: "Unfair treatment based on race/gender", opts: ["Fairness", "Unfair treatment based on race/gender", "Equality", "Friendship"] },
+            { q: "No one shall be held in ______ or servitude.", a: "Slavery", opts: ["Job", "Slavery", "School", "Hostel"] },
+            { q: "The word 'dignity' refers to ______.", a: "Self-respect", opts: ["Wealth", "Self-respect", "Power", "Height"] },
+            { q: "Freedom of ______ means the right to speak your mind.", a: "Expression", opts: ["Walking", "Expression", "Eating", "Sleeping"] },
+            { q: "Human rights should be protected by the rule of ______.", a: "Law", opts: ["Force", "Law", "Money", "King"] },
+            { q: "The word 'servitude' refers to ______.", a: "State of being a slave", opts: ["Service to nation", "State of being a slave", "Leadership", "Freedom"] },
+            { q: "Human rights are ______ (cannot be taken away).", a: "Inalienable", opts: ["Changeable", "Inalienable", "Temporary", "Local"] },
+            { q: "Which organization works for human rights globally?", a: "Amnesty International", opts: ["FIFA", "Amnesty International", "ICC", "NASA"] },
+            { q: "The word 'violation' means ______.", a: "Breaking a law/right", opts: ["Following a rule", "Breaking a law/right", "Creating a law", "Helping others"] },
+            { q: "Everyone is equal before the ______.", a: "Law", opts: ["Rich", "Law", "President", "Police"] },
+            { q: "The word 'arbitrary' means ______.", a: "Based on random choice", opts: ["Planned", "Based on random choice", "Legal", "Scientific"] },
+            { q: "Everyone has the right to a ______ and public hearing.", a: "Fair", opts: ["Secret", "Fair", "Long", "Expensive"] },
+            { q: "The word 'asylum' refers to ______.", a: "Protection for refugees", opts: ["A hospital", "Protection for refugees", "A school", "A prison"] },
+            { q: "Every child has the right to ______.", a: "Protection", opts: ["Work in factory", "Protection", "War", "Driving"] },
+            { q: "The word 'standard of living' includes ______.", a: "Food and housing", opts: ["Cars only", "Food and housing", "Phones only", "Movies"] },
+            { q: "Human rights apply to everyone ______ of their nationality.", a: "Regardless", opts: ["Because", "Regardless", "Instead", "Only"] },
+            { q: "The word 'fundamental' means ______.", a: "Basic and essential", opts: ["Complex", "Basic and essential", "Useless", "New"] },
+            { q: "No one shall be subjected to ______.", a: "Torture", opts: ["Education", "Torture", "Play", "Food"] },
+            { q: "The word 'brotherhood' implies ______.", a: "Spirit of unity", opts: ["Fighting", "Spirit of unity", "Enemy", "Business"] },
+            { q: "Everyone has the right to ______ of movement.", a: "Freedom", opts: ["Restriction", "Freedom", "Speed", "Stop"] },
+            { q: "The word 'conscience' refers to ______.", a: "Sense of right and wrong", opts: ["Dreams", "Sense of right and wrong", "Fever", "Wealth"] },
+            { q: "The right to work is a ______ right.", a: "Human", opts: ["Useless", "Human", "Illegal", "Gift"] },
+            { q: "The primary purpose of UDHR is to ensure ______.", a: "Global peace and dignity", opts: ["War", "Global peace and dignity", "Trade only", "Competition"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

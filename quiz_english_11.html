@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relationships | কুইজ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Relationships - Etiquette and Manners</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "What does 'Etiquette' mean?", a: "The rules of correct behavior in society", opts: ["Fighting with others", "The rules of correct behavior in society", "Earning money", "Playing games"] },
+            { q: "What is 'Manners'?", a: "Behavior that is considered polite", opts: ["Loud speaking", "Behavior that is considered polite", "Eating too fast", "Ignoring people"] },
+            { q: "Etiquette is a ______ word.", a: "French", opts: ["English", "French", "German", "Latin"] },
+            { q: "Manners can vary from ______ to society.", a: "Society", opts: ["Person", "Home", "Society", "Country"] },
+            { q: "The two important words in social life are ______.", a: "Please and Thank you", opts: ["Hi and Bye", "Go and Come", "Please and Thank you", "Yes and No"] },
+            { q: "Who teaches us etiquette and manners first?", a: "Our parents", opts: ["Friends", "Our parents", "Movies", "Strangers"] },
+            { q: "The word 'behavior' means?", a: "The way one acts", opts: ["The way one eats", "The way one acts", "The way one looks", "The way one sleeps"] },
+            { q: "Good manners cost ______.", a: "Nothing", opts: ["Much money", "Nothing", "A lot of time", "Hard work"] },
+            { q: "Polite behavior makes life ______.", a: "Pleasant", opts: ["Boring", "Pleasant", "Difficult", "Sad"] },
+            { q: "We should show respect to ______.", a: "Our elders", opts: ["Only rich people", "Our elders", "No one", "Only friends"] },
+            { q: "The word 'courteous' means?", a: "Polite and respectful", opts: ["Angry", "Polite and respectful", "Lazy", "Rich"] },
+            { q: "Manners are learned at ______.", a: "Home", opts: ["Market", "Home", "Cinema", "Field"] },
+            { q: "The word 'grudge' means?", a: "A feeling of resentment", opts: ["Happiness", "A feeling of resentment", "A gift", "Friendship"] },
+            { q: "We should not interrupt others while ______.", a: "Talking", opts: ["Eating", "Talking", "Sleeping", "Walking"] },
+            { q: "Which one is an example of bad manners?", a: "Speaking with food in mouth", opts: ["Saying sorry", "Speaking with food in mouth", "Helping others", "Smiling"] },
+            { q: "The word 'indispensable' means?", a: "Essential", opts: ["Useless", "Essential", "Optional", "Old"] },
+            { q: "A person with good manners is ______ by all.", a: "Liked", opts: ["Hated", "Liked", "Feared", "Ignored"] },
+            { q: "The word 'virtue' refers to ______.", a: "Good moral quality", opts: ["Money", "Good moral quality", "A disease", "Bad habit"] },
+            { q: "How should we behave in a public place?", a: "Quietly and politely", opts: ["Loudly", "Quietly and politely", "Rudely", "Greedily"] },
+            { q: "The word 'appreciate' means?", a: "Value or recognize", opts: ["Hate", "Value or recognize", "Forget", "Hide"] },
+            { q: "Social norms are ______ of behavior.", a: "Rules", opts: ["Rules", "Maps", "Games", "Pictures"] },
+            { q: "We should say 'Sorry' when we ______.", a: "Make a mistake", opts: ["Win a race", "Make a mistake", "Eat food", "See a movie"] },
+            { q: "The word 'gracious' means?", a: "Kind and pleasant", opts: ["Mean", "Kind and pleasant", "Strong", "Fast"] },
+            { q: "Manners make a man ______.", a: "Perfect/Complete", opts: ["Rich", "Perfect/Complete", "Strong", "Tall"] },
+            { q: "Being 'on time' is a sign of ______.", a: "Good manners", opts: ["Laziness", "Good manners", "Wealth", "Fear"] },
+            { q: "The word 'modest' means?", a: "Humble", opts: ["Proud", "Humble", "Loud", "Fast"] },
+            { q: "We should not use ______ language.", a: "Abusive", opts: ["Polite", "Abusive", "Simple", "English"] },
+            { q: "Manners are part of our ______.", a: "Culture", opts: ["Clothes", "Culture", "Height", "Money"] },
+            { q: "The word 'refinement' refers to ______.", a: "Good taste and manners", opts: ["Being crude", "Good taste and manners", "Being fast", "Being old"] },
+            { q: "Etiquette and manners help to maintain ______.", a: "Peace and harmony", opts: ["War", "Peace and harmony", "Confusion", "Distance"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amerigo, a Street Child | কুইজ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Amerigo, a Street Child - Unit 8: Lesson 4</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "How old is Amerigo?", a: "13 years old", opts: ["10 years old", "12 years old", "13 years old", "15 years old"] },
+            { q: "Where does Amerigo live now?", a: "On the street", opts: ["In an orphanage", "With his parents", "On the street", "In a hostel"] },
+            { q: "What happened to Amerigo's parents?", a: "They are separated", opts: ["They are dead", "They live together", "They are separated", "They are in abroad"] },
+            { q: "What was Amerigo's first job?", a: "Collecting trash", opts: ["Selling ice cream", "Collecting trash", "Cleaning shoes", "Selling flowers"] },
+            { q: "Why did he stop selling ice cream?", a: "He became seriously ill", opts: ["He didn't like it", "He became seriously ill", "The owner fired him", "He found a better job"] },
+            { q: "The word 'trash' means?", a: "Rubbish", opts: ["Rubbish", "Money", "Food", "Clothes"] },
+            { q: "Where does Amerigo sleep usually?", a: "On the street", opts: ["In a bed", "On the street", "In a room", "Under a tree"] },
+            { q: "Amerigo's father lives ______.", a: "Far away from him", opts: ["With him", "In the same city", "Far away from him", "In another country"] },
+            { q: "His mother told him to ______.", a: "Go away", opts: ["Come home", "Go away", "Study hard", "Wait for her"] },
+            { q: "The word 'vendor' refers to ______.", a: "A seller", opts: ["A buyer", "A seller", "A collector", "A doctor"] },
+            { q: "Amerigo used to sort through ______ bins.", a: "Garbage", opts: ["Storage", "Garbage", "Kitchen", "Office"] },
+            { q: "He suffered from serious ______ infections.", a: "Skin", opts: ["Skin", "Eye", "Ear", "Bone"] },
+            { q: "The word 'dump' refers to ______.", a: "A place where waste is left", opts: ["A playground", "A place where waste is left", "A market", "A school"] },
+            { q: "Amerigo earns very ______ money.", a: "Little", opts: ["Much", "Little", "Fair", "No"] },
+            { q: "How does Amerigo feel about his life?", a: "Insecure and lonely", opts: ["Happy and safe", "Insecure and lonely", "Excited", "Wealthy"] },
+            { q: "The word 'separation' means ______.", a: "Unity", opts: ["Separation", "Friendship", "Peace", "Love"] },
+            { q: "Amerigo has no ______ to go back to.", a: "Home", opts: ["Home", "Job", "School", "Trash"] },
+            { q: "Working in the ice cream shop was ______.", a: "Difficult", opts: ["Easy", "Difficult", "Fun", "Boring"] },
+            { q: "The owner of the ice cream shop gave him ______.", a: "Only food", opts: ["A salary", "Only food", "Clothes", "A room"] },
+            { q: "Amerigo's mother is married to ______.", a: "Another man", opts: ["His father", "A rich man", "Another man", "No one"] },
+            { q: "The word 'shining' shoes is another ______ he did.", a: "Job", opts: ["Game", "Job", "Exercise", "Habit"] },
+            { q: "Amerigo dreams of a ______ life.", a: "Normal", opts: ["Famous", "Normal", "King's", "Rich"] },
+            { q: "He sees other street children ______.", a: "Suffering like him", opts: ["Playing happily", "Suffering like him", "Going to school", "Eating well"] },
+            { q: "The word 'starvation' means ______.", a: "Hunger", opts: ["Thirst", "Hunger", "Cold", "Fever"] },
+            { q: "Amerigo is lucky to be ______.", a: "Alive", opts: ["Rich", "Alive", "Educated", "Famous"] },
+            { q: "The word 'fortunate' is the opposite of ______.", a: "Unlucky", opts: ["Lucky", "Unlucky", "Happy", "Rich"] },
+            { q: "Street children often face ______ at night.", a: "Cold and danger", opts: ["Parties", "Cold and danger", "Movies", "Dreams"] },
+            { q: "The passage highlights the ______ of street children.", a: "Plight", opts: ["Wealth", "Plight", "Education", "Travel"] },
+            { q: "The word 'plight' means ______.", a: "A difficult situation", opts: ["A happy trip", "A difficult situation", "A bright light", "A new plan"] },
+            { q: "Amerigo wants to have a ______ like others.", a: "Family", opts: ["Car", "Family", "Phone", "Shop"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid" id="options-${index}">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

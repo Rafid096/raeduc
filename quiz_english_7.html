@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adolescence | কুইজ</title>
+    <style>
+        /* আপনার ওয়েবসাইটের থিম ও কাঠামো */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>Adolescence - Unit 4: Lesson 1</h3>
+        <div class="timer" id="timer">25:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_english.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "Adolescence is the period of transition from ______.", a: "Childhood to adulthood", opts: ["Birth to childhood", "Childhood to adulthood", "Adulthood to old age", "Infancy to puberty"] },
+            { q: "Who defined adolescence as a period of 'storm and stress'?", a: "G. Stanley Hall", opts: ["Sigmund Freud", "G. Stanley Hall", "Erik Erikson", "Jean Piaget"] },
+            { q: "The word 'transition' means ______.", a: "Change", opts: ["Stability", "Change", "End", "Beginning"] },
+            { q: "What kind of changes occur during adolescence?", a: "Physical and psychological", opts: ["Only physical", "Only financial", "Physical and psychological", "No changes"] },
+            { q: "The age range for adolescence according to WHO is ______.", a: "10-19 years", opts: ["5-12 years", "10-19 years", "13-18 years", "15-25 years"] },
+            { q: "The word 'adolescence' comes from the Latin word 'adolescere', which means ______.", a: "To grow up", opts: ["To sleep", "To grow up", "To play", "To fight"] },
+            { q: "Which of the following is a core feature of adolescence?", a: "Search for identity", opts: ["Searching for job", "Search for identity", "Buying house", "Marriage"] },
+            { q: "Adolescents often experience ______ swings.", a: "Mood", opts: ["Body", "Mood", "Sleep", "Food"] },
+            { q: "The word 'vulnerable' means ______.", a: "At risk", opts: ["Strong", "At risk", "Safe", "Happy"] },
+            { q: "Adolescents are often influenced by their ______.", a: "Peers", opts: ["Teachers", "Peers", "Enemies", "Strangers"] },
+            { q: "What is a major health risk for adolescent girls in many countries?", a: "Early marriage and pregnancy", opts: ["Sports injuries", "Early marriage and pregnancy", "Old age diseases", "Job stress"] },
+            { q: "The word 'puberty' refers to ______.", a: "Sexual maturity", opts: ["Intellectual growth", "Sexual maturity", "Physical height only", "Reading ability"] },
+            { q: "Adolescence is a time of ______ development.", a: "Cognitive", opts: ["No", "Cognitive", "Slow", "Decreasing"] },
+            { q: "The word 'potential' refers to ______.", a: "Possibility", opts: ["Reality", "Possibility", "Past", "Weakness"] },
+            { q: "Adolescents often want more ______ from parents.", a: "Autonomy", opts: ["Money", "Autonomy", "Rules", "Punishment"] },
+            { q: "The word 'autonomy' means ______.", a: "Independence", opts: ["Dependence", "Independence", "Slavery", "Group work"] },
+            { q: "Adolescent brains are still ______.", a: "Developing", opts: ["Fixed", "Developing", "Shrinking", "Dead"] },
+            { q: "Risky behavior is more common in ______.", a: "Adolescence", opts: ["Infancy", "Adolescence", "Old age", "Adulthood"] },
+            { q: "The word 'stature' in this context means ______.", a: "Physical growth", opts: ["Physical growth", "Voice", "Hair color", "Clothing"] },
+            { q: "Adolescence is often called the '______' of life.", a: "Springtime", opts: ["Winter", "Springtime", "End", "Middle"] },
+            { q: "What does 'stress' refer to in Hall's definition?", a: "Emotional tension", opts: ["Physical weight", "Emotional tension", "Financial debt", "Lack of time"] },
+            { q: "The word 'inclusive' means ______.", a: "Including everything", opts: ["Excluding others", "Including everything", "Very small", "Silent"] },
+            { q: "Adolescents need proper ______ for growth.", a: "Nutrition", opts: ["Gaming", "Nutrition", "Sleep only", "Fashion"] },
+            { q: "The word 'hazard' means ______.", a: "Danger", opts: ["Safety", "Danger", "Luck", "Peace"] },
+            { q: "What can affect an adolescent's self-esteem?", a: "Body image", opts: ["Weather", "Body image", "Bank balance", "Shoe size"] },
+            { q: "The word 'prevalence' refers to ______.", a: "Commonness", opts: ["Rarity", "Commonness", "Height", "Speed"] },
+            { q: "Adolescents are at risk of ______ abuse.", a: "Substance", opts: ["Knowledge", "Substance", "Water", "Fruit"] },
+            { q: "Social ______ plays a role in adolescent development.", a: "Environment", opts: ["Media only", "Environment", "Isolation", "Silence"] },
+            { q: "The word 'dynamic' means ______.", a: "Changing/Active", opts: ["Slow", "Changing/Active", "Fixed", "Lazy"] },
+            { q: "Which organization works for adolescent health globally?", a: "WHO", opts: ["FIFA", "WHO", "NASA", "ICC"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid" id="options-${index}">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 25 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>
