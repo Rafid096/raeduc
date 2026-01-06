@@ -5,120 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICT | Academic Portal</title>
     <style>
-        /* আপনার দেওয়া স্ক্রিনশটের হুবহু সিএসএস ডিজাইন */
+        /* আপনার ওয়েবসাইটের অরিজিনাল স্টাইল হুবহু রাখা হয়েছে */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0f172a; color: #ffffff; padding: 20px; }
+        body { background-color: #121826; color: #ffffff; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        nav { padding: 20px 5%; display: flex; align-items: center; background: #121826; position: sticky; top: 0; z-index: 1000; }
+        .back-btn { background: #232d3f; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; }
+        .syllabus-header { text-align: center; padding: 20px 5%; }
+        .syllabus-header h1 { font-size: 24px; color: #764ba2; margin-bottom: 10px; }
+        .container { padding: 20px 5%; flex: 1; }
+        .section-title { background: #1c2536; padding: 12px 20px; border-radius: 10px; margin: 20px 0 15px; border-left: 5px solid #764ba2; font-size: 18px; color: #ffffff; }
+        .list-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
         
-        .header { margin-bottom: 30px; }
-        .back-btn { 
-            display: inline-block;
-            background: #1e293b; 
-            color: white; 
-            padding: 10px 20px; 
-            border-radius: 8px; 
-            text-decoration: none; 
-            font-size: 14px; 
-            margin-bottom: 20px;
-            border: 1px solid #334155; 
-        }
-        
-        .title-text { font-size: 20px; margin-bottom: 25px; font-weight: 500; }
+        .topic-link { text-decoration: none; display: block; }
+        .topic-item { background: #ffffff; color: #333; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .topic-item:hover { transform: scale(1.02); background: #f0f0f0; }
+        .topic-info h3 { font-size: 16px; margin-bottom: 3px; color: #2c3e50; }
+        .topic-info p { font-size: 13px; color: #7f8c8d; }
+        .start-icon { color: #764ba2; font-size: 20px; }
 
-        .chapter-list { display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 0 auto; }
-        
-        .chapter-card { 
-            background: #ffffff; 
-            color: #1e293b; 
-            padding: 20px; 
-            border-radius: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        
-        .info h3 { font-size: 18px; margin-bottom: 4px; color: #1e293b; font-weight: 600; }
-        .info p { font-size: 14px; color: #64748b; }
-        
-        .play-icon { color: #7c3aed; font-size: 18px; }
-
-        .section-divider { 
-            background: #1e293b; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 10px 0; 
-            border-left: 5px solid #7c3aed;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .footer { text-align: center; margin-top: 50px; font-size: 11px; color: #64748b; letter-spacing: 1px; line-height: 1.5; }
+        .footer { background-color: #0f141e; text-align: center; padding: 30px 20px; border-top: 1px solid #1c2536; margin-top: auto; }
+        .footer p { color: #94a3b8; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .footer .creator { color: #475569; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <a href="index.html" class="back-btn">← ফিরে যান</a>
-        <div class="title-text">ICT</div>
+    <nav>
+        <a href="home.html" class="back-btn">⬅ ফিরে যান</a>
+    </nav>
+
+    <div class="syllabus-header">
+        <h1>ICT Quiz</h1>
+        <p>Select a chapter below to start the practice session</p>
     </div>
 
-    <div class="chapter-list">
-        <a href="quiz_ict_1.html" class="chapter-card">
-            <div class="info">
-                <h3>তথ্য ও যোগাযোগ প্রযুক্তি</h3>
-                <p>বিশ্ব ও বাংলাদেশ প্রেক্ষিত</p>
-            </div>
-            <div class="play-icon">▶</div>
-        </a>
+    <div class="container">
+        <h2 class="section-title">1. General Chapters</h2>
+        <div class="list-grid">
+            <a href="quiz_ict_1.html" class="topic-link">
+                <div class="topic-item">
+                    <div class="topic-info"><h3>তথ্য ও যোগাযোগ প্রযুক্তি</h3><p>বিশ্ব ও বাংলাদেশ প্রেক্ষিত</p></div>
+                    <div class="start-icon">▶</div>
+                </div>
+            </a>
+            <a href="quiz_ict_2.html" class="topic-link">
+                <div class="topic-item">
+                    <div class="topic-info"><h3>কমিউনিকেশন সিস্টেমস</h3><p>ও নেটওয়ার্কিং</p></div>
+                    <div class="start-icon">▶</div>
+                </div>
+            </a>
+            <a href="quiz_ict_3.html" class="topic-link">
+                <div class="topic-item">
+                    <div class="topic-info"><h3>সংখ্যা পদ্ধতি</h3><p>ও ডিজিটাল ডিভাইস</p></div>
+                    <div class="start-icon">▶</div>
+                </div>
+            </a>
+            <a href="quiz_ict_4.html" class="topic-link">
+                <div class="topic-item">
+                    <div class="topic-info"><h3>ওয়েব ডিজাইন পরিচিতি</h3><p>ও HTML</p></div>
+                    <div class="start-icon">▶</div>
+                </div>
+            </a>
+            <a href="quiz_ict_5.html" class="topic-link">
+                <div class="topic-item">
+                    <div class="topic-info"><h3>প্রোগ্রামিং ভাষা</h3><p>সি-প্রোগ্রামিং (C)</p></div>
+                    <div class="start-icon">▶</div>
+                </div>
+            </a>
+        </div>
 
-        <a href="quiz_ict_2.html" class="chapter-card">
-            <div class="info">
-                <h3>কমিউনিকেশন সিস্টেমস</h3>
-                <p>ও নেটওয়ার্কিং</p>
-            </div>
-            <div class="play-icon">▶</div>
-        </a>
-
-        <a href="quiz_ict_3.html" class="chapter-card">
-            <div class="info">
-                <h3>সংখ্যা পদ্ধতি</h3>
-                <p>ও ডিজিটাল ডিভাইস</p>
-            </div>
-            <div class="play-icon">▶</div>
-        </a>
-
-        <a href="quiz_ict_4.html" class="chapter-card">
-            <div class="info">
-                <h3>ওয়েব ডিজাইন পরিচিতি</h3>
-                <p>ও HTML</p>
-            </div>
-            <div class="play-icon">▶</div>
-        </a>
-
-        <a href="quiz_ict_5.html" class="chapter-card">
-            <div class="info">
-                <h3>প্রোগ্রামিং ভাষা</h3>
-                <p>সি-প্রোগ্রামিং (C)</p>
-            </div>
-            <div class="play-icon">▶</div>
-        </a>
-
-        <div class="section-divider">2. Database Section</div>
-
-        <a href="quiz_ict_6.html" class="chapter-card">
-            <div class="info">
-                <h3>ডেটাবেস ম্যানেজমেন্ট সিস্টেম</h3>
-                <p>অধ্যায় ৬: DBMS</p>
-            </div>
-            <div class="play-icon">▶</div>
-        </a>
+        <h2 class="section-title">2. Database Section</h2>
+        <div class="list-grid">
+            <a href="quiz_ict_6.html" class="topic-link">
+                <div class="topic-item">
+                    <div class="topic-info"><h3>ডেটাবেস ম্যানেজমেন্ট সিস্টেম</h3><p>অধ্যায় ৬: DBMS</p></div>
+                    <div class="start-icon">▶</div>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <div class="footer">
-        © 2026 ACADEMIC PORTAL | ALL RIGHTS RESERVED<br>
-        CREATED BY RAFID AHAMMED
-    </div>
+    <footer class="footer">
+        <p>© 2026 ACADEMIC PORTAL | ALL RIGHTS RESERVED</p>
+        <div class="creator">CREATED BY RAFID AHAMMED</div>
+    </footer>
 
 </body>
 </html>
+
