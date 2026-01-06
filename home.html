@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>হোম | একাডেমিক পোর্টাল</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         /* আপনার অরিজিনাল ফাইলের হুবহু স্টাইল রাখা হয়েছে */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -27,6 +28,20 @@
         .subject-card:hover { transform: translateY(-5px); }
         .subject-card h3 { color: #764ba2; margin: 15px 0 5px; font-size: 22px; }
         .subject-card p { color: #666; font-size: 15px; }
+
+        /* ফিডব্যাক সেকশন স্টাইল (ডিজাইনের সাথে মিল রেখে) */
+        .feedback-section { padding: 20px 5%; margin-bottom: 20px; }
+        .feedback-box { background: #1c2536; padding: 25px; border-radius: 20px; border: 1px solid #2d3748; max-width: 600px; margin: 0 auto; }
+        .feedback-box h3 { color: #764ba2; margin-bottom: 15px; text-align: center; }
+        .feedback-box input, .feedback-box textarea { 
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; 
+            border: 1px solid #2d3748; background: #121826; color: white; outline: none;
+        }
+        .feedback-box button { 
+            background: #764ba2; color: white; border: none; padding: 12px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s;
+        }
+        .feedback-box button:hover { background: #663d91; }
 
         .footer { background-color: #0f141e; text-align: center; padding: 30px 20px; border-top: 1px solid #1c2536; }
         .footer p { color: #94a3b8; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
@@ -70,12 +85,28 @@
         </div>
     </div>
 
+    <div class="feedback-section">
+        <div class="feedback-box">
+            <h3>শিক্ষার্থীদের মন্তব্য</h3>
+            <form id="feedback-form">
+                <input type="text" id="from_name" placeholder="আপনার নাম" readonly required>
+                <textarea id="message" rows="4" placeholder="আপনার মন্তব্য বা পরামর্শ লিখুন..." required></textarea>
+                <button type="submit" id="send-btn">মন্তব্য পাঠান</button>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer">
         <p>© 2026 ACADEMIC PORTAL | ALL RIGHTS RESERVED</p>
         <div class="creator">CREATED BY RAFID AHAMMED</div>
     </footer>
 
     <script>
+        // আপনার দেওয়া পাবলিক কি দিয়ে ইনিশিয়ালাইজ করা হলো
+        (function() {
+            emailjs.init("3-BURn5O3hxXkTOy3"); 
+        })();
+
         window.onload = function() {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             const name = localStorage.getItem('studentName');
@@ -83,10 +114,41 @@
             if (isLoggedIn === 'true' && name) {
                 document.getElementById('userNameDisplay').innerText = name;
                 document.getElementById('welcomeHeading').innerText = "স্বাগতম, " + name + "!";
+                document.getElementById('from_name').value = name;
             } else {
                 window.location.href = "index.html";
             }
         };
+
+        // EmailJS ফর্ম সাবমিট হ্যান্ডলার
+        document.getElementById('feedback-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('send-btn');
+            btn.innerText = 'পাঠানো হচ্ছে...';
+            btn.disabled = true;
+
+            const serviceID = 'service_ub9ecp4';
+            const templateID = 'template_04sr0gj';
+
+            const templateParams = {
+                from_name: document.getElementById('from_name').value,
+                message: document.getElementById('message').value
+            };
+
+            emailjs.send(serviceID, templateID, templateParams)
+                .then(() => {
+                    btn.innerText = 'পাঠানো হয়েছে! ✅';
+                    alert('আপনার মন্তব্য সফলভাবে পাঠানো হয়েছে।');
+                    document.getElementById('message').value = '';
+                    btn.disabled = false;
+                    btn.innerText = 'মন্তব্য পাঠান';
+                }, (err) => {
+                    btn.innerText = 'আবার চেষ্টা করুন ❌';
+                    btn.disabled = false;
+                    alert('দুঃখিত, কোনো সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+                });
+        });
     </script>
 
 </body>
