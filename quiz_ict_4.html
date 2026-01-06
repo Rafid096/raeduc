@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Chapter 4 | Quiz</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম ও ডিজাইন */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>ICT Chapter 4 - ওয়েব ডিজাইন ও HTML</h3>
+        <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_ict.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "HTML এর পূর্ণরূপ কী?", a: "Hyper Text Markup Language", opts: ["Hyper Text Markup Language", "Hyper Tech Markup Language", "High Text Machine Language", "Hyper Tool Multi Language"] },
+            { q: "HTML কে তৈরি করেন?", a: "টিম বার্নার্স লি", opts: ["বিল গেটস", "স্টিভ জবস", "টিম বার্নার্স লি", "মার্ক জাকারবার্গ"] },
+            { q: "কোনটি ওয়েবসাইটের মূল ঠিকানা বা প্রবেশদ্বার?", a: "Home Page", opts: ["Index Page", "Home Page", "Last Page", "Link Page"] },
+            { q: "HTML ফাইলে ছবি যুক্ত করার ট্যাগ কোনটি?", a: "img", opts: ["image", "pic", "img", "src"] },
+            { q: "হাইপারলিঙ্ক করার জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "a", opts: ["link", "href", "a", "url"] },
+            { q: "HTML এ হেডিং ট্যাগ কয়টি?", a: "৬টি", opts: ["৩টি", "৫টি", "৬টি", "৭টি"] },
+            { q: "সবচেয়ে বড় হেডিং ট্যাগ কোনটি?", a: "h1", opts: ["h1", "h6", "head", "title"] },
+            { q: "লাইন ব্রেক (Line Break) দেওয়ার জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "br", opts: ["break", "lb", "br", "hr"] },
+            { q: "HTML ফাইলে কমেন্ট করার সঠিক নিয়ম কোনটি?", a: "", opts: ["// কমেন্ট", "/* কমেন্ট */", "", "# কমেন্ট"] },
+            { q: "কোনটি এম্পটি (Empty) ট্যাগ?", a: "img", opts: ["p", "b", "img", "table"] },
+            { q: "টেক্সট বোল্ড করার জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "b", opts: ["bold", "b", "it", "strong"] },
+            { q: "ইটালিক (Italic) করার জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "i", opts: ["it", "italic", "i", "em"] },
+            { q: "অর্ডারড লিস্ট (Ordered List) তৈরির ট্যাগ কোনটি?", a: "ol", opts: ["ul", "ol", "li", "list"] },
+            { q: "আunordered লিস্ট (Unordered List) তৈরির ট্যাগ কোনটি?", a: "ul", opts: ["ul", "ol", "li", "list"] },
+            { q: "টেবিল তৈরির মূল ট্যাগ কোনটি?", a: "table", opts: ["tr", "td", "table", "th"] },
+            { q: "টেবিলের হেডিং তৈরির জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "th", opts: ["tr", "th", "td", "head"] },
+            { q: "টেবিলের রো (Row) তৈরির জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "tr", opts: ["tr", "td", "th", "row"] },
+            { q: "টেবিলের ডেটা (Data) বা সেল তৈরির জন্য কোন ট্যাগ ব্যবহৃত হয়?", a: "td", opts: ["tr", "td", "th", "cell"] },
+            { q: "ফন্ট কালার পরিবর্তন করার অ্যাট্রিবিউট কোনটি?", a: "color", opts: ["bg-color", "text-color", "color", "face"] },
+            { q: "বডি ট্যাগের ব্যাকগ্রাউন্ড কালার পরিবর্তনের কমান্ড কোনটি?", a: "bgcolor", opts: ["color", "background", "bgcolor", "style"] },
+            { q: "HTML ফাইলের এক্সটেনশন কোনটি?", a: ".html", opts: [".txt", ".html", ".css", ".js"] },
+            { q: "কোনটি একটি ব্রাউজার নয়?", a: "Google", opts: ["Chrome", "Firefox", "Safari", "Google"] },
+            { q: "IP Address এর সংখ্যাত্মক রূপকে কী বলে?", a: "Domain Name", opts: ["URL", "Domain Name", "HTTP", "Protocol"] },
+            { q: "সার্চ ইঞ্জিনের উদাহরণ কোনটি?", a: "Google", opts: ["Google", "Chrome", "Windows", "Facebook"] },
+            { q: "কোনটি ডোমেইন নেম এক্সটেনশন?", a: ".com", opts: ["www", "http", ".com", "index"] },
+            { q: "শিক্ষা প্রতিষ্ঠানের ডোমেইন এক্সটেনশন কোনটি?", a: ".edu", opts: [".com", ".org", ".edu", ".gov"] },
+            { q: "সরকারি প্রতিষ্ঠানের ডোমেইন এক্সটেনশন কোনটি?", a: ".gov", opts: [".com", ".net", ".gov", ".org"] },
+            { q: "HTTP এর পূর্ণরূপ কী?", a: "Hyper Text Transfer Protocol", opts: ["Hyper Text Transfer Protocol", "High Text Transfer Protocol", "Hyper Tool Transfer Program", "Hyper Text Tool Protocol"] },
+            { q: "FTP এর পূর্ণরূপ কী?", a: "File Transfer Protocol", opts: ["File Transfer Protocol", "Fast Transfer Program", "File Text Protocol", "Folder Transfer Protocol"] },
+            { q: "URL এর কয়টি অংশ থাকে?", a: "৩টি", opts: ["২টি", "৩টি", "৪টি", "৫টি"] },
+            { q: "ওয়েবসাইটের কাঠামো (Structure) প্রধানত কয় প্রকার?", a: "৪ প্রকার", opts: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"] },
+            { q: "সবচেয়ে জনপ্রিয় ওয়েবসাইট কাঠামো কোনটি?", a: "Hierarchical", opts: ["Linear", "Hierarchical", "Network", "Hybrid"] },
+            { q: "যে কাঠামোতে সবগুলো পেজ একে অপরের সাথে যুক্ত থাকে তাকে কী বলে?", a: "Network/Web-linked", opts: ["Linear", "Network/Web-linked", "Tree", "Hybrid"] },
+            { q: "স্ট্যাটিক ওয়েবসাইটের বৈশিষ্ট্য কোনটি?", a: "কন্টেন্ট পরিবর্তন হয় না", opts: ["কন্টেন্ট পরিবর্তন হয় না", "ডেটাবেস থাকে", "খুব দ্রুত লোড হয় না", "ইউজার রেজিস্ট্রেশন করা যায়"] },
+            { q: "ডাইনামিক ওয়েবসাইটের ভাষা কোনটি?", a: "PHP", opts: ["HTML", "CSS", "XML", "PHP"] },
+            { q: "HTML এ ছবি যুক্ত করতে 'src' এর পূর্ণরূপ কী?", a: "Source", opts: ["Search", "Screen", "Source", "Size"] },
+            { q: "হরাইজন্টাল লাইন (Horizontal Line) তৈরির ট্যাগ কোনটি?", a: "hr", opts: ["br", "hr", "line", "hl"] },
+            { q: "লিস্ট আইটেম (List Item) তৈরির ট্যাগ কোনটি?", a: "li", opts: ["ol", "ul", "li", "it"] },
+            { q: "ওয়েব পেজে টেক্সট আন্ডারলাইন করার ট্যাগ কোনটি?", a: "u", opts: ["un", "u", "ul", "line"] },
+            { q: "WWW এর পূর্ণরূপ কী?", a: "World Wide Web", opts: ["World Web Wide", "World Wide Web", "Wide World Web", "Web World Wide"] },
+            { q: "ডোমেইন নেম রেজিস্ট্রেশন করে কোন সংস্থা?", a: "ICANN", opts: ["IEEE", "ISO", "ICANN", "W3C"] },
+            { q: "ওয়েব পেজ হোস্টিং করা হয় কোথায়?", a: "Web Server", opts: ["Browser", "Web Server", "CPU", "Domain"] },
+            { q: "HTML এর লেটেস্ট ভার্সন কোনটি?", a: "HTML5", opts: ["HTML3", "HTML4", "HTML5", "HTML6"] },
+            { q: "সুপারস্ক্রিপ্ট (যেমন: A²) করার ট্যাগ কোনটি?", a: "sup", opts: ["sub", "sup", "sp", "high"] },
+            { q: "সাবস্ক্রিপ্ট (যেমন: H₂O) করার ট্যাগ কোনটি?", a: "sub", opts: ["sub", "sup", "sb", "low"] },
+            { q: "HTML এ বড় প্যারাগ্রাফ লেখার ট্যাগ কোনটি?", a: "p", opts: ["para", "pg", "p", "text"] },
+            { q: "একটি টেবিল ডাটা দুই বা ততোধিক কলাম জুড়ে থাকলে কোন অ্যাট্রিবিউট ব্যবহৃত হয়?", a: "colspan", opts: ["rowspan", "colspan", "cellpadding", "spacing"] },
+            { q: "একটি টেবিল ডাটা দুই বা ততোধিক রো জুড়ে থাকলে কোন অ্যাট্রিবিউট ব্যবহৃত হয়?", a: "rowspan", opts: ["rowspan", "colspan", "width", "height"] },
+            { q: "HTML কোড কোথায় লেখা হয়?", a: "Notepad/Text Editor", opts: ["Browser", "Notepad/Text Editor", "Calculator", "Excel"] },
+            { q: "কোনটি কন্টেইনার ট্যাগ?", a: "html", opts: ["br", "hr", "img", "html"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

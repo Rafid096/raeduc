@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Chapter 5 | Quiz</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম ও ডিজাইন */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>ICT Chapter 5 - প্রোগ্রামিং ভাষা (C)</h3>
+        <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_ict.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "সি (C) ভাষা কে উদ্ভাবন করেন?", a: "ডেনিস রিচি", opts: ["বিল গেটস", "ডেনিস রিচি", "জেমস গসলিং", "অ্যাডা লাভলেস"] },
+            { q: "সি কোন স্তরের প্রোগ্রামিং ভাষা?", a: "মধ্যম স্তরের ভাষা", opts: ["উচ্চ স্তরের ভাষা", "মধ্যম স্তরের ভাষা", "নিম্ন স্তরের ভাষা", "যান্ত্রিক ভাষা"] },
+            { q: "সি ভাষার প্রতিটি স্টেটমেন্ট শেষ করতে কোন চিহ্ন ব্যবহৃত হয়?", a: ";", opts: [":", ",", ".", ";"] },
+            { q: "সি ভাষায় আউটপুট দেখার ফাংশন কোনটি?", a: "printf()", opts: ["scanf()", "printf()", "getch()", "input()"] },
+            { q: "সি ভাষায় ইনপুট নেওয়ার ফাংশন কোনটি?", a: "scanf()", opts: ["printf()", "scanf()", "output()", "read()"] },
+            { q: "সি প্রোগ্রামের প্রধান অংশ কোনটি?", a: "main() function", opts: ["Header file", "main() function", "Variable", "Comment"] },
+            { q: "সি ভাষায় পূর্ণ সংখ্যা (Integer) এর ফরম্যাট স্পেসিফায়ার কোনটি?", a: "%d", opts: ["%f", "%c", "%d", "%s"] },
+            { q: "ফ্লোটিং পয়েন্ট (ভগ্নাংশ) এর ফরম্যাট স্পেসিফায়ার কোনটি?", a: "%f", opts: ["%d", "%f", "%c", "%s"] },
+            { q: "সি ভাষায় অক্ষর বা ক্যারেক্টার টাইপ ডেটার জন্য কোনটি ব্যবহৃত হয়?", a: "char", opts: ["int", "float", "double", "char"] },
+            { q: "অ্যালগরিদম কী?", a: "ধাপে ধাপে সমস্যা সমাধান", opts: ["চিত্রের মাধ্যমে সমাধান", "ধাপে ধাপে সমস্যা সমাধান", "প্রোগ্রাম লেখা", "কম্পিউটার হার্ডওয়্যার"] },
+            { q: "ফ্লোচার্টে প্রক্রিয়া বা প্রসেসিং বোঝাতে কোন চিত্র ব্যবহৃত হয়?", a: "আয়তক্ষেত্র", opts: ["বৃত্ত", "আয়তক্ষেত্র", "রম্বস", "সামান্তরিক"] },
+            { q: "ফ্লোচার্টে ইনপুট বা আউটপুট বোঝাতে কোন চিত্র ব্যবহৃত হয়?", a: "সামান্তরিক", opts: ["আয়তক্ষেত্র", "রম্বস", "সামান্তরিক", "ডিম্বাকৃতি"] },
+            { q: "ফ্লোচার্টে সিদ্ধান্ত (Decision) নিতে কোন চিত্র ব্যবহৃত হয়?", a: "রম্বস", opts: ["বৃত্ত", "রম্বস", "সামান্তরিক", "আয়তক্ষেত্র"] },
+            { q: "কম্পাইলারের কাজ কী?", a: "উচ্চ স্তরের ভাষাকে মেশিন ভাষায় রূপান্তর", opts: ["মেশিন ভাষাকে উচ্চ স্তরে রূপান্তর", "উচ্চ স্তরের ভাষাকে মেশিন ভাষায় রূপান্তর", "গেম খেলা", "ছবি এডিট করা"] },
+            { q: "কোনটি লুপ কন্ট্রোল স্টেটমেন্ট?", a: "for", opts: ["if", "switch", "for", "printf"] },
+            { q: "সি ভাষায় ডেটা টাইপ কয়টি?", a: "৪টি", opts: ["২টি", "৩টি", "৪টি", "৫টি"] },
+            { q: "কোনটি কি-ওয়ার্ড (Keyword) নয়?", a: "total", opts: ["int", "if", "for", "total"] },
+            { q: "সি ভাষায় মেমোরিতে int টাইপ ডেটা কত বাইট জায়গা নেয়?", a: "২ বাইট", opts: ["১ বাইট", "২ বাইট", "৪ বাইট", "৮ বাইট"] },
+            { q: "অ্যারে (Array) কীসের সমষ্টি?", a: "একই ধরনের ডেটার", opts: ["ভিন্ন ধরনের ডেটার", "একই ধরনের ডেটার", "অপারেটরের", "লুপের"] },
+            { q: "সি প্রোগ্রামিংয়ে নতুন লাইন তৈরির কমান্ড কোনটি?", a: "\\n", opts: ["\\t", "\\n", "\\a", "\\r"] },
+            { q: "অপারেটর কত প্রকার?", a: "৮ প্রকার", opts: ["৩ প্রকার", "৫ প্রকার", "৮ প্রকার", "১০ প্রকার"] },
+            { q: "একাধিক শর্ত চেক করার জন্য কোনটি ব্যবহৃত হয়?", a: "else if", opts: ["if", "else", "else if", "switch"] },
+            { q: "সি ভাষায় পাওয়ার (Power) বের করার ফাংশন কোনটি?", a: "pow()", opts: ["sqrt()", "abs()", "pow()", "exp()"] },
+            { q: "scanf ফাংশনে ভ্যারিয়েবলের আগে কোন চিহ্ন দিতে হয়?", a: "&", opts: ["*", "$", "@", "&"] },
+            { q: "হেডার ফাইল যুক্ত করার কমান্ড কোনটি?", a: "#include", opts: ["#define", "#main", "#include", "#file"] },
+            { q: "কোন প্রোগ্রামিং ভাষাকে সব ভাষার জননী বলা হয়?", a: "C", opts: ["Java", "Python", "C", "C++"] },
+            { q: "প্রোগ্রামের ভুল সংশোধন করাকে কী বলে?", a: "Debugging", opts: ["Coding", "Debugging", "Testing", "Executing"] },
+            { q: "সবচেয়ে দ্রুত গতির অনুবাদক প্রোগ্রাম কোনটি?", a: "Compiler", opts: ["Interpreter", "Assembler", "Compiler", "Translator"] },
+            { q: "ইন্টারপ্রিটার কীভাবে অনুবাদ করে?", a: "এক লাইন এক লাইন করে", opts: ["সম্পূর্ণ প্রোগ্রাম একসাথে", "এক লাইন এক লাইন করে", "শুধুমাত্র আউটপুট", "অর্ধেক প্রোগ্রাম"] },
+            { q: "অ্যাসেম্বলি ভাষা কোন প্রজন্মের ভাষা?", a: "২য় প্রজন্ম", opts: ["১ম প্রজন্ম", "২য় প্রজন্ম", "৩য় প্রজন্ম", "৪র্থ প্রজন্ম"] },
+            { q: "সি ভাষায় স্ট্রিং (String) এর ফরম্যাট স্পেসিফায়ার কোনটি?", a: "%s", opts: ["%d", "%f", "%c", "%s"] },
+            { q: "লুপ কত প্রকার?", a: "২ প্রকার", opts: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"] },
+            { q: "while লুপে শর্ত কোথায় থাকে?", a: "শুরুতে", opts: ["শেষে", "শুরুতে", "মাঝখানে", "থাকে না"] },
+            { q: "do-while লুপে শর্ত কোথায় থাকে?", a: "শেষে", opts: ["শুরুতে", "শেষে", "মাঝখানে", "থাকে না"] },
+            { q: "গাণিতিক অপারেটর কোনটি?", a: "%", opts: ["&&", "||", "!", "%"] },
+            { q: "লজিক্যাল 'AND' অপারেটর কোনটি?", a: "&&", opts: ["||", "&&", "!", "=="] },
+            { q: "সি ভাষায় ভ্যারিয়েবল নাম হিসেবে কোনটি সঠিক?", a: "student_name", opts: ["1student", "student name", "student_name", "int"] },
+            { q: "অপারেটর a++ মানে কী?", a: "a = a + 1", opts: ["a = a + 1", "a = a + 2", "a = a * 1", "a = a - 1"] },
+            { q: "অপারেটর a-- মানে কী?", a: "a = a - 1", opts: ["a = a + 1", "a = a - 1", "a = a * 1", "a = a / 1"] },
+            { q: "সি ভাষায় হেডার ফাইলের এক্সটেনশন কী?", a: ".h", opts: [".c", ".cpp", ".h", ".exe"] },
+            { q: "নিচের কোনটি 4GL বা চতুর্থ প্রজন্মের ভাষা?", a: "SQL", opts: ["C", "Assembly", "SQL", "FORTRAN"] },
+            { q: "মেশিন ভাষার সুবিধা কোনটি?", a: "সরাসরি কম্পিউটার বোঝে", opts: ["মানুষ দ্রুত বোঝে", "সরাসরি কম্পিউটার বোঝে", "সহজ কোডিং", "সহজ অনুবাদ"] },
+            { q: "কোন প্রোগ্রামিং ভাষাটি ওয়েবসাইটের জন্য বেশি ব্যবহৃত হয়?", a: "PHP", opts: ["C", "PHP", "Basic", "Cobol"] },
+            { q: "ফ্লোচার্টে সংযোগকারী (Connector) হিসেবে কোনটি ব্যবহৃত হয়?", a: "বৃত্ত", opts: ["আয়তক্ষেত্র", "বৃত্ত", "রম্বস", "তীর চিহ্ন"] },
+            { q: "অ্যালগরিদম এর চিত্ররূপ কোনটি?", a: "ফ্লোচার্ট", opts: ["প্রোগ্রাম", "ফ্লোচার্ট", "সুডোকোড", "ডকুমেন্টেশন"] },
+            { q: "printf(\"%d\", 5+2); এর আউটপুট কী হবে?", a: "7", opts: ["5+2", "52", "7", "Error"] },
+            { q: "সি ভাষায় কন্সট্যান্ট (Constant) মান ঘোষণা করার কমান্ড কোনটি?", a: "const", opts: ["var", "val", "const", "fixed"] },
+            { q: "বড় মান সংরক্ষণের জন্য কোন ডেটা টাইপ ব্যবহৃত হয়?", a: "double", opts: ["int", "char", "float", "double"] },
+            { q: "সি প্রোগ্রামের এক্সিকিউটেবল ফাইলের এক্সটেনশন কী?", a: ".exe", opts: [".c", ".obj", ".exe", ".h"] },
+            { q: "নিচের কোনটি সি কম্পাইলার?", a: "Turbo C", opts: ["Notepad", "Excel", "Turbo C", "Word"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

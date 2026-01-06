@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Chapter 1 | Quiz</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম ও ডিজাইন */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>ICT Chapter 1 - বিশ্ব ও বাংলাদেশ প্রেক্ষিত</h3>
+        <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_ict.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "বিশ্বগ্রাম (Global Village) ধারণার প্রবক্তা কে?", a: "মার্শাল ম্যাকলুহান", opts: ["বিল গেটস", "মার্শাল ম্যাকলুহান", "স্টিভ জবস", "টিম বার্নার্স লি"] },
+            { q: "তথ্য ও যোগাযোগ প্রযুক্তির বর্তমান প্রবণতা কোনটি?", a: "ক্লাউড কম্পিউটিং", opts: ["এনালগ সিস্টেম", "ক্লাউড কম্পিউটিং", "রেডিও ব্যবহার", "টেলিগ্রাম"] },
+            { q: "ভার্চুয়াল রিয়েলিটিতে কোন সেন্সর ব্যবহৃত হয়?", a: "HMD", opts: ["LCD", "HMD", "LED", "CRT"] },
+            { q: "টেলিমেডিসিন সেবা প্রদানের মূল মাধ্যম কোনটি?", a: "ইন্টারনেট", opts: ["পোস্ট অফিস", "ইন্টারনেট", "রেডিও", "সংবাদপত্র"] },
+            { q: "মানুষের দুঃসাধ্য কাজের বিকল্প হিসেবে কোনটি ব্যবহৃত হয়?", a: "রোবটিক্স", opts: ["টেলিভিশন", "কম্পিউটার", "রোবটিক্স", "মোবাইল"] },
+            { q: "ক্রায়োসার্জারিতে ব্যবহৃত প্রধান গ্যাস কোনটি?", a: "নাইট্রোজেন", opts: ["অক্সিজেন", "নাইট্রোজেন", "কার্বন ডাই অক্সাইড", "মিথেন"] },
+            { q: "বায়োমেট্রিক্স পদ্ধতিতে শনাক্তকরণের মাধ্যম কোনটি?", a: "শারীরবৃত্তীয় বৈশিষ্ট্য", opts: ["পোশাক", "শারীরবৃত্তীয় বৈশিষ্ট্য", "শিক্ষাগত যোগ্যতা", "আর্থিক অবস্থা"] },
+            { q: "নিচের কোনটি বায়োইনফরমেটিক্স এর লক্ষ্য?", a: "জৈবিক তথ্য বিশ্লেষণ", opts: ["আর্থিক হিসাব", "জৈবিক তথ্য বিশ্লেষণ", "গাড়ি চালানো", "আবহাওয়ার খবর"] },
+            { q: "জেনেটিক ইঞ্জিনিয়ারিং এর মাধ্যমে উদ্ভাবিত নতুন জীবকে কী বলে?", a: "GMO", opts: ["DNA", "RNA", "GMO", "Cell"] },
+            { q: "ন্যানো টেকনোলজি কোন স্কেলের সাথে সম্পর্কিত?", a: "১০^-৯ মিটার", opts: ["১০^-৬ মিটার", "১০^-৯ মিটার", "১০^-১২ মিটার", "১০^-৩ মিটার"] },
+            { q: "অনলাইনে পণ্য কেনাবেচাকে কী বলা হয়?", a: "ই-কমার্স", opts: ["ই-মেইল", "ই-লার্নিং", "ই-কমার্স", "ই-গভর্নেন্স"] },
+            { q: "কৃত্রিম বুদ্ধিমত্তা (AI) প্রধানত কোথায় ব্যবহৃত হয়?", a: "রোবটিক্স", opts: ["হিসাব বিজ্ঞানে", "রোবটিক্স", "মুদ্রণ শিল্পে", "কৃষিতে"] },
+            { q: "ইন্টারনেটের মাধ্যমে শিক্ষা গ্রহণ করাকে কী বলে?", a: "ই-লার্নিং", opts: ["ই-বিজনেস", "ই-লার্নিং", "ই-পেমেন্ট", "ই-ব্যাংকিং"] },
+            { q: "আউটসোর্সিং এর জন্য জনপ্রিয় ওয়েবসাইট কোনটি?", a: "Upwork", opts: ["Facebook", "Upwork", "Twitter", "Amazon"] },
+            { q: "ডিজিটাল স্বাক্ষর (Digital Signature) কেন ব্যবহৃত হয়?", a: "নিরাপত্তার জন্য", opts: ["ছবি আঁকার জন্য", "নিরাপত্তার জন্য", "গেম খেলার জন্য", "টাইপ করার জন্য"] },
+            { q: "হ্যাকিং কী?", a: "অননুমোদিত প্রবেশ", opts: ["নতুন সফটওয়্যার তৈরি", "অননুমোদিত প্রবেশ", "ইমেইল পাঠানো", "ডেটা কপি করা"] },
+            { q: "বিশ্বগ্রামের মেরুদণ্ড কোনটি?", a: "কানেক্টিভিটি", opts: ["কম্পিউটার", "কানেক্টিভিটি", "ডেটা", "সফটওয়্যার"] },
+            { q: "ভার্চুয়াল রিয়েলিটির নেতিবাচক প্রভাব কোনটি?", a: "অবাস্তব জগতে বিচরণ", opts: ["দক্ষতা বৃদ্ধি", "অবাস্তব জগতে বিচরণ", "সহজ যোগাযোগ", "সময় সাশ্রয়"] },
+            { q: "ক্রায়োসার্জারিতে টিউমার ধ্বংস করা হয় কীসের মাধ্যমে?", a: "অতি নিম্ন তাপমাত্রায়", opts: ["উচ্চ তাপমাত্রায়", "অতি নিম্ন তাপমাত্রায়", "সার্জিক্যাল ব্লেড", "লেজার রশ্মি"] },
+            { q: "মানুষের চোখের রেটিনা স্ক্যান করা কোন প্রযুক্তির অংশ?", a: "বায়োমেট্রিক্স", opts: ["জেনেটিক ইঞ্জিনিয়ারিং", "বায়োমেট্রিক্স", "রোবটিক্স", "ন্যানোটেকনোলজি"] },
+            { q: "DNA সিকোয়েন্সিং এর জন্য কোনটি ব্যবহৃত হয়?", a: "বায়োইনফরমেটিক্স", opts: ["রোবটিক্স", "বায়োইনফরমেটিক্স", "টেলিমেডিসিন", "ভিআর"] },
+            { q: "রোবটের হাত নাড়াচাড়া করার জন্য কী ব্যবহৃত হয়?", a: "একচুয়েটর", opts: ["সেন্সর", "একচুয়েটর", "চাকা", "ক্যামেরা"] },
+            { q: "কোনটি ন্যানো প্রযুক্তির জনক?", a: "রিচার্ড ফাইনম্যান", opts: ["নিউটন", "আইনস্টাইন", "রিচার্ড ফাইনম্যান", "জন ম্যাকার্থি"] },
+            { q: "তথ্য প্রযুক্তির অপব্যবহার কোনটি?", a: "সাইবার অপরাধ", opts: ["অনলাইন ক্লাস", "সাইবার অপরাধ", "ই-বুক পড়া", "তথ্য খোঁজা"] },
+            { q: "নিচের কোনটি স্প্যাম (Spam)?", a: "অযাচিত ইমেইল", opts: ["গুরুত্বপূর্ণ ফাইল", "অযাচিত ইমেইল", "কম্পিউটার ভাইরাস", "সফটওয়্যার"] },
+            { q: "কৃত্রিম বুদ্ধিমত্তার জনক কে?", a: "জন ম্যাকার্থি", opts: ["এলান টিউরিং", "জন ম্যাকার্থি", "বিল গেটস", "জ্যাক মা"] },
+            { q: "বিশ্বগ্রাম শব্দটি প্রথম কে ব্যবহার করেন?", a: "মার্শাল ম্যাকলুহান", opts: ["স্টিভ জবস", "মার্শাল ম্যাকলুহান", "টিম বার্নার্স লি", "মার্ক জাকারবার্গ"] },
+            { q: "ই-গভর্নেন্স এর উদ্দেশ্য কী?", a: "স্বচ্ছতা ও জবাবদিহিতা", opts: ["বিনোদন", "স্বচ্ছতা ও জবাবদিহিতা", "ব্যবসা করা", "গেম খেলা"] },
+            { q: "স্মার্ট হোম এর বৈশিষ্ট্য কোনটি?", a: "গৃহস্থালি যন্ত্রের নিয়ন্ত্রণ", opts: ["বড় বাড়ি", "গৃহস্থালি যন্ত্রের নিয়ন্ত্রণ", "দামি আসবাবপত্র", "রঙিন দেয়াল"] },
+            { q: "অফিসে না গিয়ে ইন্টারনেটের মাধ্যমে কাজ করাকে কী বলে?", a: "টেলি-কমিউটিং", opts: ["অফিসিং", "টেলি-কমিউটিং", "আউটিং", "সার্ভিং"] },
+            { q: "নিচের কোনটি সোশ্যাল মিডিয়া নয়?", a: "Google", opts: ["Facebook", "X (Twitter)", "Instagram", "Google"] },
+            { q: "সাইবার বুলিং কী?", a: "অনলাইনে কাউকে হয়রানি", opts: ["অনলাইনে কেনাকাটা", "অনলাইনে কাউকে হয়রানি", "গেম খেলা", "ভিডিও দেখা"] },
+            { q: "কোনটি ভিডিও কনফারেন্সিং এর মাধ্যম?", a: "Zoom", opts: ["Excel", "Zoom", "Paint", "Notepad"] },
+            { q: "বিশ্বগ্রামের উপাদাান কয়টি?", a: "৫টি", opts: ["৩টি", "৪টি", "৫টি", "৬টি"] },
+            { q: "ক্রায়োসার্জারি চিকিৎসার সুবিধা কী?", a: "রক্তপাতহীন অপারেশন", opts: ["বেশি রক্তপাত", "রক্তপাতহীন অপারেশন", "দীর্ঘস্থায়ী ব্যথা", "বেশি খরচ"] },
+            { q: "বায়োমেট্রিক্স এ ব্যবহৃত আচরণের বৈশিষ্ট্য কোনটি?", a: "কণ্ঠস্বর", opts: ["কণ্ঠস্বর", "আঙুলের ছাপ", "চোখের মণি", "ডিএনএ"] },
+            { q: "জেনেটিক ইঞ্জিনিয়ারিং এর সফল প্রয়োগ কোনটি?", a: "উন্নত জাতের শস্য উদ্ভাবন", opts: ["সফটওয়্যার তৈরি", "উন্নত জাতের শস্য উদ্ভাবন", "ইন্টারনেট সংযোগ", "গাড়ি তৈরি"] },
+            { q: "১ ন্যানোমিটার সমান কত?", a: "১০^-৯ মিটার", opts: ["১০^-৩ মিটার", "১০^-৬ মিটার", "১০^-৯ মিটার", "১০^-১২ মিটার"] },
+            { q: "ভার্চুয়াল রিয়েলিটির অপর নাম কী?", a: "সাইবার স্পেস", opts: ["সাইবার স্পেস", "ডিজিটাল ওয়ার্ল্ড", "মাল্টিমিডিয়া", "হাইপার লিংক"] },
+            { q: "কম্পিউটার এথিক্স এর কয়টি নিয়ম আছে?", a: "১০টি", opts: ["৫টি", "৮টি", "১০টি", "১২টি"] },
+            { q: "নিচের কোনটি আইসিটি এর সুফল?", a: "দ্রুত যোগাযোগ", opts: ["বেকারত্ব বৃদ্ধি", "দ্রুত যোগাযোগ", "চোখের সমস্যা", "প্রাইভেসি নষ্ট"] },
+            { q: "ফ্রি-ল্যান্সিং কী?", a: "মুক্ত পেশা", opts: ["সরকারি চাকরি", "মুক্ত পেশা", "ব্যবসা", "গৃহস্থালি কাজ"] },
+            { q: "নিচের কোনটি বায়োমেট্রিক্স শনাক্তকরণের শারীরবৃত্তীয় বৈশিষ্ট্য?", a: "Hand geometry", opts: ["Signature", "Hand geometry", "Keystroke", "Voice print"] },
+            { q: "ই-হেলথ সার্ভিস কোনটি?", a: "অনলাইন চিকিৎসা সেবা", opts: ["অনলাইন জুয়া", "অনলাইন চিকিৎসা সেবা", "অনলাইন শপিং", "অনলাইন ব্যাংকিং"] },
+            { q: "রোবট শব্দটি কোন শব্দ থেকে এসেছে?", a: "Robota", opts: ["Robotize", "Robota", "Robotic", "Robon"] },
+            { q: "নিচের কোনটি ক্লাউড কম্পিউটিং এর সুবিধা?", a: "ডেটা সংরক্ষণ ও ব্যাকআপ", opts: ["ইন্টারনেট খরচ বাড়ানো", "ডেটা সংরক্ষণ ও ব্যাকআপ", "কম্পিউটার গরম করা", "স্লো কাজ করা"] },
+            { q: "সফটওয়্যার পাইরেসি কী?", a: "অননুমোদিত কপি করা", opts: ["সফটওয়্যার কেনা", "অননুমোদিত কপি করা", "নতুন ভার্সন তৈরি", "আপডেট করা"] },
+            { q: "তথ্য প্রযুক্তির মাধ্যমে বিশ্বকে একটি গ্রামে পরিণত করাকে কী বলে?", a: "বিশ্বগ্রাম", opts: ["ডিজিটাল গ্রাম", "বিশ্বগ্রাম", "ই-ভিলেজ", "গ্লোবাল সিটি"] },
+            { q: "কৃষিক্ষেত্রে আইসিটি এর ব্যবহার কোনটি?", a: "ই-কৃষি", opts: ["ই-কমার্স", "ই-কৃষি", "ই-পাসপোর্ট", "ই-ভোট"] },
+            { q: "কোন প্রযুক্তিতে আলো ব্যবহার করে ডেটা আদান-প্রদান করা হয়?", a: "অপটিক্যাল ফাইবার", opts: ["রেডিও তরঙ্গ", "অপটিক্যাল ফাইবার", "ব্লুটুথ", "ওয়াইফাই"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 45 * 60; // ৪৫ মিনিট
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

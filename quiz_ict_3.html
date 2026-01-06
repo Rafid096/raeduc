@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Chapter 3 | Quiz</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম ও ডিজাইন */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>ICT Chapter 3 - সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস</h3>
+        <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_ict.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "বাইনারি সংখ্যা পদ্ধতির বেস কত?", a: "2", opts: ["2", "8", "10", "16"] },
+            { q: "হেক্সাডেসিমেল পদ্ধতিতে 'F' এর মান কত?", a: "15", opts: ["10", "12", "14", "15"] },
+            { q: "অক্টাল সংখ্যা পদ্ধতিতে অংক কয়টি?", a: "8টি", opts: ["2টি", "8টি", "10টি", "16টি"] },
+            { q: "কম্পিউটার কোন ভাষা সরাসরি বুঝতে পারে?", a: "মেশিন ভাষা (বাইনারি)", opts: ["উচ্চস্তরের ভাষা", "মেশিন ভাষা (বাইনারি)", "বাংলা ভাষা", "ইংরেজি ভাষা"] },
+            { q: "ডেসিমেল সংখ্যা ১২ এর বাইনারি কত?", a: "1100", opts: ["1010", "1100", "1110", "1011"] },
+            { q: "লজিক গেট প্রধানত কয় প্রকার?", a: "৩ প্রকার", opts: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"] },
+            { q: "বুলিয়ান অ্যালজেবরায় ১+১ = কত?", a: "1", opts: ["0", "1", "10", "2"] },
+            { q: "NAND গেট কোন দুটি গেটের সমন্বয়ে তৈরি?", a: "AND ও NOT", opts: ["OR ও NOT", "AND ও NOT", "XOR ও NOT", "AND ও OR"] },
+            { q: "কোন গেটকে মৌলিক গেট বলা হয় না?", a: "NAND", opts: ["AND", "OR", "NOT", "NAND"] },
+            { q: "ইউনিভার্সাল বা সর্বজনীন গেট কোনটি?", a: "NOR", opts: ["AND", "OR", "XOR", "NOR"] },
+            { q: "একটি হাফ-অ্যাডারে কয়টি আউটপুট থাকে?", a: "২টি", opts: ["১টি", "২টি", "৩টি", "৪টি"] },
+            { q: "এনকোডারের কাজ কী?", a: "মানুষের ভাষাকে কম্পিউটারের ভাষায় রূপান্তর", opts: ["কম্পিউটারের ভাষাকে মানুষের ভাষায় রূপান্তর", "মানুষের ভাষাকে কম্পিউটারের ভাষায় রূপান্তর", "যোগ করা", "বিয়োগ করা"] },
+            { q: "ডিকোডার কোথায় ব্যবহৃত হয়?", a: "আউটপুট ইউনিটে", opts: ["ইনপুট ইউনিটে", "আউটপুট ইউনিটে", "সিপিইউতে", "মেমোরিতে"] },
+            { q: "১ বাইট সমান কত বিট?", a: "8 বিট", opts: ["4 বিট", "8 বিট", "16 বিট", "32 বিট"] },
+            { q: "ASCII কোড কত বিটের হয়?", a: "8 বিট", opts: ["4 বিট", "7 বিট", "8 বিট", "16 বিট"] },
+            { q: "ইউনিকোড (Unicode) কত বিটের হয়?", a: "16 বিট", opts: ["8 বিট", "16 বিট", "32 বিট", "64 বিট"] },
+            { q: "কোন গেটের সকল ইনপুট ১ হলে আউটপুট ০ হয়?", a: "NAND", opts: ["AND", "OR", "XOR", "NAND"] },
+            { q: "XOR গেটের আউটপুট ১ হবে যখন-", a: "ইনপুটসমূহ বিজোড় সংখ্যক ১ হয়", opts: ["সব ইনপুট ০ হয়", "সব ইনপুট ১ হয়", "ইনপুটসমূহ বিজোড় সংখ্যক ১ হয়", "ইনপুট সমান হয়"] },
+            { q: "২ এর পরিপূরক (2's Complement) কেন করা হয়?", a: "ঋণাত্মক সংখ্যা বোঝাতে", opts: ["ধনাত্মক সংখ্যা বোঝাতে", "ঋণাত্মক সংখ্যা বোঝাতে", "গুন করতে", "যোগ করতে"] },
+            { q: "বিট (Bit) এর পূর্ণরূপ কী?", a: "Binary Digit", opts: ["Binary Data", "Binary Digit", "Basic Digit", "Binary Unit"] },
+            { q: "বুলিয়ান উপপাদ্য অনুযায়ী A + 0 = ?", a: "A", opts: ["0", "1", "A", "A'"] },
+            { q: "বুলিয়ান উপপাদ্য অনুযায়ী A . A' = ?", a: "0", opts: ["0", "1", "A", "A'"] },
+            { q: "ডিমরগানের প্রথম উপপাদ্য কোনটি?", a: "(A+B)' = A'.B'", opts: ["(A.B)' = A'+B'", "(A+B)' = A'.B'", "A+B = B+A", "A.B = B.A"] },
+            { q: "লজিক গেটে ইনপুট ০ থাকলে আউটপুট ১ হয় কোন গেটে?", a: "NOT", opts: ["AND", "OR", "NOT", "XOR"] },
+            { q: "ফ্লিপ-ফ্লপ কী হিসেবে কাজ করে?", a: "মেমোরি এলিমেন্ট", opts: ["যোগ করার যন্ত্র", "মেমোরি এলিমেন্ট", "ইনপুট ডিভাইস", "আউটপুট ডিভাইস"] },
+            { q: "রেজিস্টার কীসের সমষ্টি?", a: "ফ্লিপ-ফ্লপ", opts: ["এনকোডার", "ডিকোডার", "ফ্লিপ-ফ্লপ", "অ্যাডার"] },
+            { q: "বুলিয়ান অ্যালজেবরার জনক কে?", a: "জর্জ বুল", opts: ["আইজ্যাক নিউটন", "জর্জ বুল", "চার্লস ব্যাবেজ", "জন ভন নিউম্যান"] },
+            { q: "হেক্সাডেসিমেল পদ্ধতিতে বেস কত?", a: "16", opts: ["2", "8", "10", "16"] },
+            { q: "বাইনারি পদ্ধতিতে ১০১ + ১ = কত?", a: "110", opts: ["102", "110", "111", "1011"] },
+            { q: "কোনটি পজিশনাল সংখ্যা পদ্ধতি নয়?", a: "রোমান", opts: ["বাইনারি", "অক্টাল", "হেক্সাডেসিমেল", "রোমান"] },
+            { q: "বিসিডি (BCD) কোড কত বিটের?", a: "4 বিট", opts: ["4 বিট", "8 বিট", "16 বিট", "32 বিট"] },
+            { q: "বাংলা বর্ণমালা কোন কোডের অন্তর্ভুক্ত?", a: "ইউনিকোড", opts: ["ASCII", "EBCDIC", "BCD", "ইউনিকোড"] },
+            { q: "একটি নট (NOT) গেটের আউটপুট ১ হলে ইনপুট কত?", a: "0", opts: ["0", "1", "X", "Y"] },
+            { q: "হাফ অ্যাডারের সাহায্যে ফুল অ্যাডার তৈরিতে কয়টি XOR গেট লাগে?", a: "২টি", opts: ["১টি", "২টি", "৩টি", "৪টি"] },
+            { q: "কাউন্টার কীসের কাজে ব্যবহৃত হয়?", a: "পালস গণনা করতে", opts: ["যোগ করতে", "পালস গণনা করতে", "তথ্য মুছতে", "ছবি আঁকতে"] },
+            { q: "লজিক গেটে ০ ও ১ কে কী বলা হয়?", a: "লজিক লেভেল", opts: ["সংখ্যা", "লজিক লেভেল", "অক্ষর", "চিহ্ন"] },
+            { q: "অক্টাল ৭ এর পরের সংখ্যা কত?", a: "10", opts: ["8", "9", "10", "11"] },
+            { q: "বাইনারি ১০০০ এর পূর্বের সংখ্যা কত?", a: "111", opts: ["111", "999", "011", "100"] },
+            { q: "AND গেট কোন অপারেশন সম্পন্ন করে?", a: "গুন", opts: ["যোগ", "বিয়োগ", "গুন", "ভাগ"] },
+            { q: "ইনপুট A ও B হলে NOR গেটের আউটপুট কী হবে?", a: "(A+B)'", opts: ["A+B", "A.B", "(A+B)'", "(A.B)'"] },
+            { q: "কম্পিউটারের অভ্যন্তরীণ কাজ কোন পদ্ধতিতে হয়?", a: "বাইনারি", opts: ["দশমিক", "বাইনারি", "অক্টাল", "হেক্সাডেসিমেল"] },
+            { q: "EBCDIC কোড কত বিটের?", a: "8 বিট", opts: ["4 বিট", "8 বিট", "16 বিট", "32 বিট"] },
+            { q: "কোন গেটকে 'ইলেকট্রনিক সুইচ' বলা হয়?", a: "লজিক গেট", opts: ["মাউস", "কিবোর্ড", "লজিক গেট", "মনিটর"] },
+            { q: "একটি হাফ অ্যাডারে কয়টি XOR গেট থাকে?", a: "১টি", opts: ["১টি", "২টি", "৩টি", "৪টি"] },
+            { q: "হেক্সাডেসিমেল এ 'A' এর দশমিক মান কত?", a: "10", opts: ["10", "11", "12", "13"] },
+            { q: "বুলিয়ান চলকের মান কোনটি হতে পারে?", a: "0 বা 1", opts: ["0 বা 1", "0 থেকে 9", "A থেকে Z", "যেকোনো সংখ্যা"] },
+            { q: "একটি ফুল অ্যাডারের কয়টি ইনপুট থাকে?", a: "৩টি", opts: ["১টি", "২টি", "৩টি", "৪টি"] },
+            { q: "৩ বিট ডিকোডারের আউটপুট কয়টি?", a: "8টি", opts: ["3টি", "6টি", "8টি", "9টি"] },
+            { q: "প্যারিটি বিট কেন যোগ করা হয়?", a: "ভুল শনাক্ত করতে", opts: ["গতি বাড়াতে", "ভুল শনাক্ত করতে", "যোগ করতে", "তথ্য লুকাতে"] },
+            { q: "কোন সার্কিটে মেমোরি থাকে না?", a: "কম্বিনেশনাল সার্কিট", opts: ["সিকোয়েন্সিয়াল সার্কিট", "কম্বিনেশনাল সার্কিট", "রেজিস্টার", "কাউন্টার"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

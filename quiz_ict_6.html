@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Chapter 6 | Quiz</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম ও ডিজাইন */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>ICT Chapter 6 - ডেটাবেস ম্যানেজমেন্ট সিস্টেম</h3>
+        <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_ict.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "DBMS-এর পূর্ণরূপ কী?", a: "Database Management System", opts: ["Data Board Management System", "Database Management System", "Digital Binary Management System", "Direct Business Management System"] },
+            { q: "ডেটাবেসের ক্ষুদ্রতম অংশকে কী বলা হয়?", a: "ডেটা", opts: ["ফিল্ড", "রেকর্ড", "ডেটা", "টেবিল"] },
+            { q: "একই সারির কয়েকটি ফিল্ড নিয়ে কী গঠিত হয়?", a: "রেকর্ড", opts: ["ফাইল", "রেকর্ড", "ডেটাবেস", "কলাম"] },
+            { q: "ডেটাবেস টেবিলের কলামকে কী বলা হয়?", a: "ফিল্ড", opts: ["রেকর্ড", "ফিল্ড", "টাপল", "সারি"] },
+            { q: "ডেটাবেস টেবিলের সারিকে (Row) কী বলা হয়?", a: "টাপল", opts: ["ফিল্ড", "অ্যাট্রিবিউট", "টাপল", "এনটিটি"] },
+            { q: "নিচের কোনটি জনপ্রিয় ডেটাবেস সফটওয়্যার?", a: "Oracle", opts: ["MS Word", "Oracle", "Excel", "Photoshop"] },
+            { q: "প্রাইমারি কি (Primary Key) এর বৈশিষ্ট্য কোনটি?", a: "অদ্বিতীয় বা ইউনিক", opts: ["ফাঁকা হতে পারে", "ডুপ্লিকেট হতে পারে", "অদ্বিতীয় বা ইউনিক", "সবার জন্য একই"] },
+            { q: "একটি টেবিলের প্রাইমারি কি যখন অন্য টেবিলে ব্যবহৃত হয় তখন তাকে কী বলে?", a: "ফরেন কি", opts: ["কম্পোজিট কি", "ফরেন কি", "ক্যান্ডিডেট কি", "সুপার কি"] },
+            { q: "SQL-এর পূর্ণরূপ কী?", a: "Structured Query Language", opts: ["Simple Query Language", "Structured Query Language", "System Query Language", "Standard Query Language"] },
+            { q: "ডেটাবেস থেকে তথ্য খোঁজার প্রক্রিয়াকে কী বলে?", a: "কুয়েরি", opts: ["সর্টিং", "কুয়েরি", "ইনডেক্সিং", "ফিল্টারিং"] },
+            { q: "ডেটাবেসে বড় টেক্সট বা বর্ণনামূলক তথ্য সংরক্ষণের ডেটা টাইপ কোনটি?", a: "Memo", opts: ["Text", "Number", "Memo", "AutoNumber"] },
+            { q: "টাকার অংক বা মুদ্রা সংরক্ষণের ডেটা টাইপ কোনটি?", a: "Currency", opts: ["Number", "Currency", "Memo", "Date/Time"] },
+            { q: "হ্যাঁ/না ধরনের তথ্যের জন্য কোন ডেটা টাইপ ব্যবহৃত হয়?", a: "Logical/Boolean", opts: ["Text", "Number", "Logical/Boolean", "OLE Object"] },
+            { q: "ডেটাবেস রিলেশনশিপ কত প্রকার?", a: "৪ প্রকার", opts: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"] },
+            { q: "একজন শিক্ষক অনেক ছাত্রকে পড়ান - এটি কোন ধরনের রিলেশন?", a: "One-to-Many", opts: ["One-to-One", "One-to-Many", "Many-to-Many", "Many-to-One"] },
+            { q: "ডেটাবেসকে সাজানোর প্রক্রিয়াকে কী বলা হয়?", a: "সর্টিং", opts: ["ইনডেক্সিং", "সর্টিং", "কুয়েরি", "রিলেশন"] },
+            { q: "দ্রুত তথ্য খোঁজার জন্য কোনটি করা হয়?", a: "ইনডেক্সিং", opts: ["সর্টিং", "ইনডেক্সিং", "ডিলিটিং", "আপডেটিং"] },
+            { q: "SQL-এ ডেটা দেখানোর জন্য কোন কমান্ড ব্যবহৃত হয়?", a: "SELECT", opts: ["SHOW", "SELECT", "VIEW", "DISPLAY"] },
+            { q: "SQL-এ নতুন রেকর্ড যুক্ত করার কমান্ড কোনটি?", a: "INSERT", opts: ["ADD", "INSERT", "CREATE", "NEW"] },
+            { q: "ডেটাবেস টেবিল ডিলিট করার কমান্ড কোনটি?", a: "DROP", opts: ["DELETE", "REMOVE", "DROP", "CLEAR"] },
+            { q: "ডেটাবেসের ডেটা ডুপ্লিকেশন রোধ করাকে কী বলে?", a: "নরমালাইজেশন", opts: ["সর্টিং", "ইনডেক্সিং", "নরমালাইজেশন", "রিলেশন"] },
+            { q: "RDBMS-এর পূর্ণরূপ কী?", a: "Relational Database Management System", opts: ["Real Database Management System", "Relational Database Management System", "Record Database Management System", "Regional Database Management System"] },
+            { q: "ডেটা টাইপ 'AutoNumber' এর কাজ কী?", a: "স্বয়ংক্রিয়ভাবে ক্রমিক নম্বর দেওয়া", opts: ["অক্ষর লেখা", "ছবি সেভ করা", "স্বয়ংক্রিয়ভাবে ক্রমিক নম্বর দেওয়া", "তারিখ লেখা"] },
+            { q: "SQL-এ নির্দিষ্ট শর্ত দেওয়ার জন্য কোন ক্লজ ব্যবহৃত হয়?", a: "WHERE", opts: ["IF", "WHERE", "ORDER BY", "GROUP BY"] },
+            { q: "ডেটাবেস অ্যাডমিনিস্ট্রেটর (DBA) কে?", a: "ডেটাবেস নিয়ন্ত্রণকারী ব্যক্তি", opts: ["ডেটাবেস ব্যবহারকারী", "ডেটাবেস নিয়ন্ত্রণকারী ব্যক্তি", "প্রোগ্রামার", "কম্পিউটার অপারেটর"] },
+            { q: "একই সাথে অনেকগুলো ফিল্ড নিয়ে গঠিত কি-কে কী বলে?", a: "কম্পোজিট প্রাইমারি কি", opts: ["ফরেন কি", "কম্পোজিট প্রাইমারি কি", "সুপার কি", "ইউনিক কি"] },
+            { q: "ERP-এর পূর্ণরূপ কী?", a: "Enterprise Resource Planning", opts: ["Easy Resource Plan", "Enterprise Resource Planning", "Entry Record Plan", "Extended Resource Program"] },
+            { q: "ডেটা সিকিউরিটি বা নিরাপত্তার জন্য কোনটি করা হয়?", a: "ব্যাকআপ ও পাসওয়ার্ড", opts: ["সর্টিং", "ইনডেক্সিং", "ব্যাকআপ ও পাসওয়ার্ড", "ডিলিটিং"] },
+            { q: "SQL-এ টেবিল তৈরির কমান্ড কোনটি?", a: "CREATE TABLE", opts: ["NEW TABLE", "MAKE TABLE", "CREATE TABLE", "SET TABLE"] },
+            { q: "ডেটাবেসে ছবি বা গ্রাফিক্স সংরক্ষণের ডেটা টাইপ কোনটি?", a: "OLE Object", opts: ["Text", "OLE Object", "Memo", "Hyperlink"] },
+            { q: "সর্টিং কত প্রকার?", a: "২ প্রকার", opts: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"] },
+            { q: "অ্যাসেন্ডিং (Ascending) মানে কী?", a: "ছোট থেকে বড়", opts: ["বড় থেকে ছোট", "ছোট থেকে বড়", "উল্টাপাল্টা", "সবগুলো"] },
+            { q: "ডিসেন্ডিং (Descending) মানে কী?", a: "বড় থেকে ছোট", opts: ["ছোট থেকে বড়", "বড় থেকে ছোট", "সরাসরি", "সবগুলো"] },
+            { q: "ডেটা ডিকশনারি কী?", a: "মেটাডেটা বা তথ্যের তথ্য", opts: ["সাধারণ ডিকশনারি", "মেটাডেটা বা তথ্যের তথ্য", "ফিল্ডের নাম", "ফাইলের নাম"] },
+            { q: "ডেটাবেসে ডুপ্লিকেট ডেটা থাকাকে কী বলে?", a: "Data Redundancy", opts: ["Data Integrity", "Data Redundancy", "Data Security", "Data Sorting"] },
+            { q: "ডেটার সঠিকতা নিশ্চিত করাকে কী বলে?", a: "Data Integrity", opts: ["Data Redundancy", "Data Integrity", "Data Mining", "Data Sharing"] },
+            { q: "SQL-এ ডেটা আপডেটের কমান্ড কোনটি?", a: "UPDATE", opts: ["CHANGE", "MODIFY", "UPDATE", "REPLACE"] },
+            { q: "ডেটাবেসে ফিল্ডের নামকে কী বলা হয়?", a: "অ্যাট্রিবিউট", opts: ["টাপল", "অ্যাট্রিবিউট", "রেকর্ড", "এনটিটি"] },
+            { q: "একটি ছাত্রের অনেকগুলো বিষয় থাকতে পারে - এটি কোন রিলেশন?", a: "One-to-Many", opts: ["One-to-One", "One-to-Many", "Many-to-Many", "One-to-None"] },
+            { q: "ডেটাবেস ফাইলের এক্সটেনশন কোনটি (MS Access)?", a: ".accdb", opts: [".docx", ".xlsx", ".accdb", ".pptx"] },
+            { q: "Distributed Database কী?", a: "বিভিন্ন স্থানে ছড়িয়ে থাকা ডেটাবেস", opts: ["একটি কম্পিউটারের ডেটাবেস", "বিভিন্ন স্থানে ছড়িয়ে থাকা ডেটাবেস", "অফলাইন ডেটাবেস", "মুছে ফেলা ডেটাবেস"] },
+            { q: "SQL-এ ডেটা সাজানোর জন্য কোন ক্লজ ব্যবহৃত হয়?", a: "ORDER BY", opts: ["GROUP BY", "ORDER BY", "WHERE", "HAVING"] },
+            { q: "ডেটাবেসে নতুন কলাম যোগ করার কমান্ড কোনটি?", a: "ALTER TABLE", opts: ["ADD COLUMN", "ALTER TABLE", "UPDATE TABLE", "SET TABLE"] },
+            { q: "নিচের কোনটি কুয়েরি ভাষার উদাহরণ নয়?", a: "HTML", opts: ["SQL", "QUEL", "QBE", "HTML"] },
+            { q: "ডেটাবেস রিলেশন তৈরির শর্ত কোনটি?", a: "কমপক্ষে একটি কমন ফিল্ড থাকতে হবে", opts: ["সব ফিল্ড সমান হতে হবে", "কমপক্ষে একটি কমন ফিল্ড থাকতে হবে", "কোন কমন ফিল্ড লাগবে না", "দুইটি টেবিলই খালি হতে হবে"] },
+            { q: "তথ্য অধিকার আইন বাংলাদেশে কত সালে পাশ হয়?", a: "২০০৯", opts: ["২০০৫", "২০০৯", "২০১২", "২০১৫"] },
+            { q: "মোবাইল ফোন নম্বর সংরক্ষণের জন্য কোন ডেটা টাইপ উপযুক্ত?", a: "Text", opts: ["Number", "Text", "Currency", "Date/Time"] },
+            { q: "SQL-এ 'SELECT *' মানে কী?", a: "সবগুলো ফিল্ড দেখানো", opts: ["একটি ফিল্ড দেখানো", "সবগুলো ফিল্ড দেখানো", "টেবিল ডিলিট করা", "নতুন টেবিল তৈরি"] },
+            { q: "ডেটাবেস থেকে কোনো তথ্য মুছে ফেলার এসকিউএল কমান্ড কোনটি?", a: "DELETE", opts: ["REMOVE", "DROP", "DELETE", "ERASE"] },
+            { q: "ডিবিএমএস-এর প্রধান কাজ কোনটি?", a: "ডেটা সংরক্ষণ ও ব্যবস্থাপনা", opts: ["ছবি এডিট করা", "গান শোনা", "ডেটা সংরক্ষণ ও ব্যবস্থাপনা", "ভিডিও চ্যাট"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `আপনার মোট স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>

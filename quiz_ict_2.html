@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Chapter 2 | Quiz</title>
+    <style>
+        /* আপনার ওয়েবসাইটের অরিজিনাল থিম ও ডিজাইন */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121826; color: #ffffff; padding: 20px; scroll-behavior: smooth; }
+        .quiz-header { position: sticky; top: 0; background: #1c2536; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; margin-bottom: 20px; border-bottom: 3px solid #764ba2; }
+        .timer { font-size: 20px; color: #e94560; font-weight: bold; }
+        .question-card { background: #1c2536; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid #764ba2; }
+        .q-text { font-size: 18px; margin-bottom: 15px; color: #2ecc71; }
+        .option { background: #232d3f; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
+        input[type="radio"] { margin-right: 10px; accent-color: #764ba2; }
+        .correct { background: #1b4332 !important; border: 1px solid #2ecc71 !important; color: #fff !important; }
+        .wrong { background: #4a1c1c !important; border: 1px solid #e74c3c !important; color: #fff !important; }
+        .submit-btn { width: 100%; background: #764ba2; color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result-summary { display: none; text-align: center; background: #232d3f; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-header" id="top">
+        <h3>ICT Chapter 2 - কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং</h3>
+        <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div id="result-summary">
+        <h2>আপনার ফলাফল</h2>
+        <div id="scoreDisplay" style="font-size: 28px; margin: 10px 0; color: #2ecc71;"></div>
+        <p id="statsDisplay"></p>
+        <button class="submit-btn" style="width: auto; padding: 10px 30px;" onclick="location.href='exam_ict.html'">ফিরে যান</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" class="submit-btn" onclick="calculateResult()">কুইজ সাবমিট করুন</button>
+    </form>
+
+    <script>
+        const quizData = [
+            { q: "ডেটা ট্রান্সমিশন স্পিডকে কী বলা হয়?", a: "ব্যান্ডউইথ", opts: ["ফ্রিকোয়েন্সি", "ব্যান্ডউইথ", "প্রোটোকল", "সিগন্যাল"] },
+            { q: "ন্যানরো ব্যান্ডের গতি কত?", a: "৪৫-৩০০ bps", opts: ["৪৫-৩০০ bps", "৯৬০০ bps", "১ Mbps", "১০০ Mbps"] },
+            { q: "ব্রড ব্যান্ডের সর্বনিম্ন গতি কত?", a: "১ Mbps", opts: ["৯৬০০ bps", "৫১২ kbps", "১ Mbps", "১০ Mbps"] },
+            { q: "একই সাথে উভয় দিকে ডেটা আদান-প্রদানের মোডকে কী বলে?", a: "ফুল ডুপ্লেক্স", opts: ["সিম্প্লেক্স", "হাফ ডুপ্লেক্স", "ফুল ডুপ্লেক্স", "মাল্টিকাস্ট"] },
+            { q: "ওয়াকিটকি কোন মোডে কাজ করে?", a: "হাফ ডুপ্লেক্স", opts: ["সিম্প্লেক্স", "হাফ ডুপ্লেক্স", "ফুল ডুপ্লেক্স", "ব্রডকাস্ট"] },
+            { q: "টেলিভিশন কোন মোডের উদাহরণ?", a: "ব্রডকাস্ট", opts: ["সিম্প্লেক্স", "হাফ ডুপ্লেক্স", "মাল্টিকাস্ট", "ব্রডকাস্ট"] },
+            { q: "ডেটা ট্রান্সমিশন মোড কয় প্রকার?", a: "৩ প্রকার", opts: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"] },
+            { q: "ফাইবার অপটিক ক্যাবলের কেন্দ্রকে কী বলা হয়?", a: "কোর", opts: ["ক্ল্যাডিং", "কোর", "জ্যাকেট", "বাফার"] },
+            { q: "সবচেয়ে দ্রুত গতির ক্যাবল কোনটি?", a: "ফাইবার অপটিক ক্যাবল", opts: ["টুইস্টেড পেয়ার", "কো-অক্ষিয়াল ক্যাবল", "ফাইবার অপটিক ক্যাবল", "টেলিফোন লাইন"] },
+            { q: "ইনফ্রারেড কোন কাজে ব্যবহৃত হয়?", a: "টিভি রিমোট", opts: ["মোবাইল টাওয়ার", "টিভি রিমোট", "স্যাটেলাইট", "রাডার"] },
+            { q: "ব্লুটুথ-এর স্ট্যান্ডার্ড কোনটি?", a: "IEEE 802.15", opts: ["IEEE 802.11", "IEEE 802.15", "IEEE 802.16", "IEEE 802.3"] },
+            { q: "ওয়াই-ফাই (Wi-Fi) এর স্ট্যান্ডার্ড কোনটি?", a: "IEEE 802.11", opts: ["IEEE 802.11", "IEEE 802.15", "IEEE 802.16", "IEEE 802.3"] },
+            { q: "ওয়াইম্যাক্স (WiMAX) এর স্ট্যান্ডার্ড কোনটি?", a: "IEEE 802.16", opts: ["IEEE 802.11", "IEEE 802.15", "IEEE 802.16", "IEEE 802.3"] },
+            { q: "PAN-এর পূর্ণরূপ কী?", a: "Personal Area Network", opts: ["Private Area Network", "Personal Area Network", "Public Area Network", "Point Area Network"] },
+            { q: "একটি শহরের মধ্যে নেটওয়ার্ককে কী বলা হয়?", a: "MAN", opts: ["LAN", "PAN", "MAN", "WAN"] },
+            { q: "বিশ্বব্যাপী বিস্তৃত নেটওয়ার্ক কোনটি?", a: "WAN", opts: ["LAN", "MAN", "WAN", "Internet"] },
+            { q: "সবগুলো কম্পিউটার একটি কেন্দ্রীয় হাবের সাথে যুক্ত থাকে কোন টপোলজিতে?", a: "স্টার টপোলজি", opts: ["বাস টপোলজি", "স্টার টপোলজি", "রিং টপোলজি", "মেশ টপোলজি"] },
+            { q: "কোন টপোলজিতে ব্যাকবোন ক্যাবল ব্যবহৃত হয়?", a: "বাস টপোলজি", opts: ["স্টার", "বাস", "ট্রি", "মেশ"] },
+            { q: "সবচেয়ে নিরাপদ নেটওয়ার্ক টপোলজি কোনটি?", a: "মেশ টপোলজি", opts: ["রিং", "বাস", "স্টার", "মেশ"] },
+            { q: "NIC-এর পূর্ণরূপ কী?", a: "Network Interface Card", opts: ["Network Internal Card", "Network Interface Card", "New Internet Card", "Node Interface Connection"] },
+            { q: "মোডেম কোন ধরনের যন্ত্র?", a: "ইনপুট ও আউটপুট", opts: ["ইনপুট", "আউটপুট", "ইনপুট ও আউটপুট", "প্রসেসিং"] },
+            { q: "ডিজিটাল সিগন্যালকে এনালগে রূপান্তর করাকে কী বলে?", a: "মডুলেশন", opts: ["ডিমডুলেশন", "মডুলেশন", "এমপ্লিফিকেশন", "ফিল্টারিং"] },
+            { q: "কোনটি নেটওয়ার্ক কানেক্টিভিটি ডিভাইস নয়?", a: "মাউস", opts: ["হাব", "সুইচ", "রাউটার", "মাউস"] },
+            { q: "IP Address-এর বর্তমান সংস্করণ কোনটি?", a: "IPv4 ও IPv6", opts: ["IPv2", "IPv4", "IPv6", "IPv4 ও IPv6"] },
+            { q: "ইউআরএল (URL) এর পূর্ণরূপ কী?", a: "Uniform Resource Locator", opts: ["Universal Resource Locator", "Uniform Resource Locator", "Unique Resource Limit", "United Resource Link"] },
+            { q: "হাব ও সুইচের মধ্যে কোনটি বুদ্ধিমান ডিভাইস?", a: "সুইচ", opts: ["হাব", "সুইচ", "মডেম", "রিপিটার"] },
+            { q: "আকাশপথের মাধ্যম কোনটি?", a: "মাইক্রোওয়েভ", opts: ["কো-অক্ষিয়াল ক্যাবল", "মাইক্রোওয়েভ", "টুইস্টেড পেয়ার", "অপটিক্যাল ফাইবার"] },
+            { q: "স্যাটেলাইট কোথায় স্থাপন করা হয়?", a: "মহাকাশে", opts: ["মাটির নিচে", "পানির নিচে", "পাহাড়ের চুড়ায়", "মহাকাশে"] },
+            { q: "ক্লাউড কম্পিউটিংয়ের প্রধান বৈশিষ্ট্য কোনটি?", a: "রিসোর্স শেয়ারিং", opts: ["নিজস্ব সার্ভার", "রিসোর্স শেয়ারিং", "অফলাইন কাজ", "ক্যাবল নেটওয়ার্ক"] },
+            { q: "ডেটা প্যাকেট আদান-প্রদানের পথ নির্ধারণ করে কোনটি?", a: "রাউটার", opts: ["হাব", "সুইচ", "রাউটার", "গেটওয়ে"] },
+            { q: "ভিন্ন ধরনের নেটওয়ার্ক যুক্ত করার জন্য কোনটি ব্যবহৃত হয়?", a: "গেটওয়ে", opts: ["হাব", "সুইচ", "ব্রিজ", "গেটওয়ে"] },
+            { q: "মাইক্রোওয়েভের ফ্রিকোয়েন্সি সীমা কত?", a: "300 MHz - 300 GHz", opts: ["300 kHz", "300 MHz - 300 GHz", "3 Hz", "30 GHz"] },
+            { q: "ফাইবার অপটিক ক্যাবলে ডেটা প্রেরিত হয় কী হিসেবে?", a: "আলোক সিগন্যাল", opts: ["বৈদ্যুতিক সিগন্যাল", "আলোক সিগন্যাল", "শব্দ সিগন্যাল", "রেডিও সিগন্যাল"] },
+            { q: "টুইস্টেড পেয়ার ক্যাবলে কয়টি তার থাকে?", a: "৮টি", opts: ["৪টি", "৬টি", "৮টি", "১০টি"] },
+            { q: "ব্লুটুথের পাল্লা কতটুকু?", a: "১০-১০০ মিটার", opts: ["১০-১০০ মিটার", "১ কি.মি.", "১০ কি.মি.", "সারা বিশ্ব"] },
+            { q: "মোবাইল ফোনে কোন ধরনের নেটওয়ার্ক ব্যবহৃত হয়?", a: "সেলুলার নেটওয়ার্ক", opts: ["ম্যান", "প্যান", "সেলুলার নেটওয়ার্ক", "ল্যান"] },
+            { q: "জিপিএস (GPS) কেন ব্যবহৃত হয়?", a: "অবস্থান নির্ণয়ে", opts: ["গান শুনতে", "অবস্থান নির্ণয়ে", "ছবি তুলতে", "কথা বলতে"] },
+            { q: "কোন প্রজন্মের মোবাইলে প্রথম ইন্টারনেট চালু হয়?", a: "২য় প্রজন্ম", opts: ["১ম প্রজন্ম", "২য় প্রজন্ম", "৩য় প্রজন্ম", "৪র্থ প্রজন্ম"] },
+            { q: "সিম (SIM)-এর পূর্ণরূপ কী?", a: "Subscriber Identity Module", opts: ["System Identity Module", "Subscriber Identity Module", "Serial Identity Mode", "Short Identity Module"] },
+            { q: "ল্যান (LAN) কার্ডের অপর নাম কী?", a: "Network Adapter", opts: ["VGA Card", "Sound Card", "Network Adapter", "RAM"] },
+            { q: "একটি মডেমের ভেতর কী থাকে?", a: "মডুলেটর ও ডিমডুলেটর", opts: ["সুইচ", "রাউটার", "মডুলেটর ও ডিমডুলেটর", "হাব"] },
+            { q: "মেসেঞ্জার বা হোয়াটসঅ্যাপে গ্রুপ চ্যাট কোন মোড?", a: "মাল্টিকাস্ট", opts: ["সিম্প্লেক্স", "ব্রডকাস্ট", "ইউনিভাস্ট", "মাল্টিকাস্ট"] },
+            { q: "আইপি অ্যাড্রেস কত বিটের হয় (IPv4)?", a: "৩২ বিট", opts: ["৮ বিট", "১৬ বিট", "৩২ বিট", "৬৪ বিট"] },
+            { q: "বিপিএস (bps) এর পূর্ণরূপ কী?", a: "Bits Per Second", opts: ["Bytes Per Second", "Bits Per Second", "Basic Per System", "Binary Per Second"] },
+            { q: "ট্রি টপোলজি আসলে কোন টপোলজির বর্ধিত রূপ?", a: "স্টার টপোলজি", opts: ["বাস", "রিং", "স্টার", "মেশ"] },
+            { q: "ফাইবার অপটিক ক্যাবলের সুবিধা কোনটি?", a: "ইলেক্ট্রোম্যাগনেটিক প্রভাব মুক্ত", opts: ["সস্তা", "সহজ স্থাপন", "ইলেক্ট্রোম্যাগনেটিক প্রভাব মুক্ত", "সবখানে পাওয়া যায়"] },
+            { q: "কো-অক্ষিয়াল ক্যাবল কোথায় বেশি ব্যবহৃত হয়?", a: "ডিশ টিভি লাইনে", opts: ["টেলিফোন লাইনে", "ডিশ টিভি লাইনে", "নেটওয়ার্ক ব্যাকবোনে", "ইলেকট্রিক লাইনে"] },
+            { q: "ব্যান্ডউইথ পরিমাপের একক কোনটি?", a: "bps", opts: ["Hertz", "Watt", "bps", "Volt"] },
+            { q: "একটি প্রেরক থেকে একটি মাত্র প্রাপকের কাছে ডেটা পাঠানোকে কী বলে?", a: "ইউনিকাস্ট", opts: ["ইউনিকাস্ট", "মাল্টিকাস্ট", "ব্রডকাস্ট", "টেলিকাস্ট"] },
+            { q: "কোন প্রজন্মে এলটিই (LTE) প্রযুক্তি শুরু হয়?", a: "৪র্থ প্রজন্ম", opts: ["২য় প্রজন্ম", "৩য় প্রজন্ম", "৪র্থ প্রজন্ম", "৫ম প্রজন্ম"] }
+        ];
+
+        const container = document.getElementById('questionsContainer');
+        quizData.forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <p class="q-text">${index + 1}. ${data.q}</p>
+                <div class="options-grid">
+                    ${data.opts.map(opt => `
+                        <label class="option" id="label-${index}-${opt.replace(/[^a-zA-Z0-9]/g, '')}">
+                            <input type="radio" name="q${index}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let timeLeft = 45 * 60;
+        const timerInterval = setInterval(() => {
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            document.getElementById('timer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); calculateResult(); }
+            timeLeft--;
+        }, 1000);
+
+        function calculateResult() {
+            clearInterval(timerInterval);
+            let score = 0, correct = 0, wrong = 0, unattempted = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    const correctLabel = document.getElementById(`label-${index}-${data.a.replace(/[^a-zA-Z0-9]/g, '')}`);
+                    if (selected.value === data.a) {
+                        score += 1; correct++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        score -= 0.25; wrong++;
+                        selected.parentElement.classList.add('wrong');
+                        correctLabel.classList.add('correct');
+                    }
+                } else { unattempted++; }
+                document.getElementsByName(`q${index}`).forEach(i => i.disabled = true);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('result-summary').style.display = 'block';
+            document.getElementById('scoreDisplay').innerText = `স্কোর: ${score.toFixed(2)}`;
+            document.getElementById('statsDisplay').innerText = `সঠিক: ${correct} | ভুল: ${wrong} | উত্তর দেননি: ${unattempted}`;
+        }
+    </script>
+</body>
+</html>
