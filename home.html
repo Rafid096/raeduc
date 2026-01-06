@@ -53,14 +53,14 @@
     <div class="subject-container">
         <div class="subject-card" onclick="location.href='exam_bengali.html'">
             <div style="font-size: 50px;">📚</div>
-            <h3>বাংলা কুইজ</h3>
-            <p>সহজ ও কার্যকরী পদ্ধতিতে বাংলা ব্যাকরণ শিখুন।</p>
+            <h3>বাংলা ১ম পত্র</h3>
+            <p>গদ্য ও পদ্যের গুরুত্বপূর্ণ এমসিকিউ প্র্যাকটিস করুন।</p>
         </div>
 
         <div class="subject-card" onclick="location.href='exam_english.html'">
             <div style="font-size: 50px;">✍️</div>
-            <h3>ইংরেজি কুইজ</h3>
-            <p>গ্রামার এবং ভোকাবুলারি টেস্ট দিয়ে নিজেকে ঝালাই করুন।</p>
+            <h3>ইংরেজি ১ম পত্র</h3>
+            <p>প্যাসেজ এবং কবিতার ওপর ভিত্তি করে কুইজে অংশ নিন।</p>
         </div>
 
         <div class="subject-card" onclick="location.href='exam_ict.html'">
@@ -77,7 +77,6 @@
 
     <script>
         window.onload = function() {
-            // ১. লগইন স্ট্যাটাস এবং নাম উভয়ই চেক করা হচ্ছে
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             const name = localStorage.getItem('studentName');
 
@@ -85,7 +84,6 @@
                 document.getElementById('userNameDisplay').innerText = name;
                 document.getElementById('welcomeHeading').innerText = "স্বাগতম, " + name + "!";
             } else {
-                // ২. যদি লগইন তথ্য না থাকে, তবেই index.html-এ পাঠাবে
                 window.location.href = "index.html";
             }
         };
